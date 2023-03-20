@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Information</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+</head>
+<body>
+
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" href="index.html">ROUPAROUPA</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <li class="nav-item"><a class="nav-link active" onclick="window.location.href='index.html'" aria-current="page">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="prefs.html">Prefs</a></li>
+                <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li> 
+                <li class="nav-item"><a class="nav-link" href="admin.html" >Admin (temporario)</a></li>
+            </ul>
+                <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='login.html';}login()">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Login/Register  
+                    <!--<span class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
+                </button>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <h1>User Information</h1>
+    <div class="row">
+        <div class="col">
+            <form>
+                <div class="form-group">
+                    <label for="search">Search:</label>
+                    <input type="text" class="form-control" id="search" placeholder="Search...">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select class="form-control" id="gender">
+                        <option value="">All</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age Range:</label>
+                    <select class="form-control" id="age">
+                        <option value="">All</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-45">36-45</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <br>
+
+    <br>
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Location</th>
+            <th>Zip Code</th>
+            <th>Gender</th>
+            <th>Age Range</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>John Doe</td>
+            <td>johndoe@example.com</td>
+            <td>New York, NY</td>
+            <td>10001</td>
+            <td>Male</td>
+            <td>18-25</td>
+        </tr>
+        <tr>
+            <td>Jane Doe</td>
+            <td>janedoe@example.com</td>
+            <td>Los Angeles, CA</td>
+            <td>90001</td>
+            <td>Female</td>
+            <td>26-35</td>
+        </tr>
+        <tr>
+            <td>Bob Smith</td>
+            <td>bobsmith@example.com</td>
+            <td>Chicago, IL</td>
+            <td>60601</td>
+            <td>Male</td>
+            <td>36-45</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+
+    <script>
+       $(document).ready(function () {
+    // Activate table search
+    $('#search').on('keyup', function () {
+        var value = $(this).val().toLowerCase();
+        $('tbody tr').filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    // Activate gender filter
+    $('#gender').on('change', function () {
+        var value = $(this).val().toLowerCase();
+        $('tbody tr').filter(function () {
+            if (value === '') {
+                return true;
+            } else {
+                return $(this).find('td:nth-child(5)').text().toLowerCase() === value;
+            }
+        }).toggle();
+    });
+
+    // Activate age range filter
+    $('#age').on('change', function () {
+        var value = $(this).val().toLowerCase();
+        $('tbody tr').filter(function () {
+            if (value === '') {
+                return true;
+            } else {
+                return $(this).find('td:nth-child(6)').text().toLowerCase() === value;
+            }
+        }).toggle();
+    });
+});
+
+    </script>
+    </body>
+    </html>

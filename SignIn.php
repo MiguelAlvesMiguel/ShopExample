@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <head>
    
         <meta charset="utf-8" />
@@ -19,6 +19,7 @@
 </head>
 
 <body>
+    <?php $nameErr = $emailErr = $passwordErr = $addressErr = $cityErr = $postalErr = $phoneErr = $nifErr = $dateErr = "";?>
    <!-- Navigation-->
    <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
@@ -30,7 +31,7 @@
                 <li class="nav-item"><a class="nav-link" href="prefs.html">Preferências</a></li>
                 <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li> 
             </ul>
-                <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='login.html';}login()">
+                <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='login.php';}login()">
                     <i class="bi bi-box-arrow-in-right"></i>
                     Login / Inscreva-se
                     <!--<span class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
@@ -50,7 +51,7 @@
           <div id="signup">   
             <h1>Inscreva-se gratuitamente</h1>
             <br> <br>
-            <form action="php/auth.php" method="post">
+            <form action="register.php" method="post">
             
               <div class="field-wrap">
                 <label>
@@ -90,7 +91,7 @@
           <br>    
           <div class="field-wrap">
               <label>
-                Distrito
+                Localidade
               </label>
               <input type="text" name="city" autocomplete="off"/>
               <span class="error"><?php echo $cityErr;?></span>
@@ -115,15 +116,7 @@
 
           </div>
           <br>    
-          <div class="field-wrap">
-              <label>
-                NIF
-              </label>
-              <input type="text" name="nif" autocomplete="off"/>
-              <span class="error"><?php echo $nifErr;?></span>
-
-          </div>
-          <br>    
+          
           <div class="field-wrap">
             <label>
               Género
@@ -139,21 +132,12 @@
             Data de Nascimento
           </label>
           <input type="date" class="dropdown" name="date" autocomplete="off"/>
-          <span class="error"> <? php echo $dateErr; ?> </span>
+          <span class="error"> <?php echo $dateErr; ?> </span>
 
       </div>
  
         </div>
-
-       
-
-
-
             <br><br>
-
-
-
-            
             <button type="submit" class="button button-block">Seguinte</button>
             
             </form>
@@ -191,7 +175,7 @@
         </div><!-- tab-content -->
         
   </div> <!-- /form -->
-
+  ?>
 <script>
 $('.form').find('input, textarea').on('keyup blur focus', function (e) {
   
@@ -239,3 +223,4 @@ $('.tab a').on('click', function (e) {
 
 </script>
 </body>
+

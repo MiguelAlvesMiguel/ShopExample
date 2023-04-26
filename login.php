@@ -1,4 +1,6 @@
 <?php
+
+require 'dbConnection.php';
 /*
 Users table:
 
@@ -27,8 +29,9 @@ brand: String (max length 255
 */
 if ($_SERVER["REQUEST_METHOD"] == "POST")  {
     $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $password = $_POST['password'];
     $valid = true;
+    //Window.alert both of these
 
     if (empty($email) || empty($password)) {
         $valid = false;
@@ -49,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")  {
                     $row = $result->fetch_assoc();
                     if (password_verify($password, $row['password_hash'])) {
                         session_start();
-                        $_SESSION['id'] = $row['id'];
+                        $_SESSION['user_id'] = $row['user_id'];
                         $_SESSION['nome_completo'] = $row['name'];
                         $_SESSION['email'] = $row['email'];
                         $_SESSION['morada'] = $row['address'];
@@ -58,7 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")  {
                         $_SESSION['telefone'] = $row['phone'];
                         $_SESSION['data_nascimento'] = $row['date_of_birth'];
                         $_SESSION['genero'] = $row['gender'];
-                        header('Location: index.php');
+                        echo '<script>alert("Login Sucessful")</script>';
+                            header('Location: index.php');
                     } else {
                         echo "<script>window.alert('Login Failed: Invalid email or password.');</script>";
                     }
@@ -75,4 +79,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")  {
         }
     }
 }
+                    
 ?>

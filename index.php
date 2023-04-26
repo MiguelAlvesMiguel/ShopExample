@@ -62,39 +62,41 @@ $('.tab a').on('click', function (e) {
     </script>
     </head>
     <body>
-        <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <?php session_start(); ?>
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand" href="index.html">2HandCloth</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <?php if (isset($_SESSION['id'])) { ?>
+            <?php if (isset($_SESSION['user_id'])) { ?>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" onclick="window.location.href='index.html'" aria-current="page">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="prefs.html">Preferências</a></li>
                     <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <span>Bem-vindo, <?php echo $_SESSION['name']; ?></span>
+                        <span>Bem-vindo, <?php echo $_SESSION['nome_completo']; ?></span>
                     </div>
-                    <button class="btn btn-outline-dark" onclick="function preferences(){window.location.href='preferences.php';}preferences()">
+                    <a class="btn btn-outline-dark" href="preferences.php">
                         <i class="bi bi-gear"></i>
                         Preferências
-                    </button>
+                    </a>
                 </div>
             <?php } else { ?>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" onclick="window.location.href='index.html'" aria-current="page">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Home</a></li>
                 </ul>
-                <button class="btn btn-outline-dark" onclick="function login(){window.location.href='login.php';}login()">
+                <a class="btn btn-outline-dark" href="SignIn.php">
                     <i class="bi bi-box-arrow-in-right"></i>
                     Login / Inscreva-se
-                </button>
+                </a>
             <?php } ?>
         </div>
     </div>
 </nav>
+
 
         <!-- Header-->
         <header class="bg-dark py-5">

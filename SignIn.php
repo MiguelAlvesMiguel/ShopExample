@@ -31,7 +31,7 @@
                 <li class="nav-item"><a class="nav-link" href="prefs.html">Preferências</a></li>
                 <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li> 
             </ul>
-                <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='login.php';}login()">
+                <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='SignIn.php';}login()">
                     <i class="bi bi-box-arrow-in-right"></i>
                     Login / Inscreva-se
                     <!--<span class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
@@ -147,25 +147,25 @@
           <div id="login">   
             <h1>Bem Vindo!</h1>
             <br>    
-            <form action="/" method="post">
+            <form action="login.php" method="post">
             
               <div class="field-wrap">
               <label>
                 Email<span class="req">*</span>
               </label>
-              <input type="email"   autocomplete="off" />
+              <input type="email"  name='email' autocomplete="off" />
             </div>
             <br>
             <div class="field-wrap">
               <label>
                 Password<span class="req">*</span>
               </label>
-              <input type="password"   autocomplete="off"/>
+              <input type="password" name='password'  autocomplete="off"/>
             </div>
             
             <p class="forgot"><a href="#">Esqueceu-se da sua password?</a></p>
             
-            <button class="button button-block">Login</button>
+            <button  type="submit" class="button button-block">Login</button>
 
             
             </form>

@@ -94,6 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+header("Location: index.php");
 // Close the database connection
 $conn->close();
 ?>

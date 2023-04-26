@@ -52,13 +52,13 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="index.html">2HandCloth</a>
+        <a class="navbar-brand" href="index.php">2HandCloth</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <?php if (isset($_SESSION['user_id'])) { ?>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="prefs.html">Preferências</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="preferences.php">Preferências</a></li>
                     <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
@@ -69,7 +69,7 @@
                 </div>
             <?php } else { ?>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
                 </ul>
                 <a class="btn btn-outline-dark" href="SignIn.php">
                     <i class="bi bi-box-arrow-in-right"></i>
@@ -82,6 +82,8 @@
 
 	<div class="container mt-5">
 		<h1>Preferências De Utilizador</h1>
+		<form method="POST" action="save_preferences.php">
+
 		
 		<!-- Categories -->
 		<div class="form-group">
@@ -109,8 +111,7 @@
             
 
 
-		</div>
-		
+	
 		<!-- Sizes -->
 <div class="form-group">
     <label for="sizes">Sizes:</label>
@@ -132,7 +133,7 @@
 </div>
 		<!-- Brands -->
 <h3>Brands</h3>
-<select name="Brands" multiple="true" class="form-control select-checkbox" size="5" style="width: 20%;">
+<select name="brands[]" multiple="true" class="form-control select-checkbox" size="5" style="width: 20%;">
 <?php
     require 'dbConnection.php';
   
@@ -153,6 +154,8 @@
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Save Preferences</button>
+        
+    </form>
         <br>
         <br>
         <!-- Logout Button -->

@@ -93,13 +93,13 @@ DATABASE SCHEME:
 function createTables($conn) {
 
 // Drop tables if they exist
-$tables = ['Users', 'Preferences', 'Products', 'ProductImages', 'Favorites', 'Notifications', 'Chats', 'Messages', 'Transactions', 'Category'];
-foreach ($tables as $table) {
-    $sql = "DROP TABLE IF EXISTS $table";
-    if (!$conn->query($sql)) {
-        echo "Error dropping table $table: " . $conn->error . "\n";
-    }
-}
+//$tables = ['Users', 'Preferences', 'Products', 'ProductImages', 'Favorites', 'Notifications', 'Chats', 'Messages', 'Transactions', 'Category'];
+//foreach ($tables as $table) {
+//    $sql = "DROP TABLE IF EXISTS $table";
+//    if (!$conn->query($sql)) {
+//        echo "Error dropping table $table: " . $conn->error . "\n";
+//    }
+//}
 
 // Create tables
 $createTableQueries = [
@@ -122,11 +122,7 @@ $createTableQueries = [
     "CREATE TABLE IF NOT EXISTS Preferences (
         preference_id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
-        category INT,
-        size VARCHAR(10),
-        brand VARCHAR(255),
-        FOREIGN KEY (user_id) REFERENCES Users(user_id),
-        FOREIGN KEY (category) REFERENCES Category(id)
+        FOREIGN KEY (user_id) REFERENCES Users(user_id)
     )",
     "CREATE TABLE IF NOT EXISTS Products (
         product_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -138,7 +134,8 @@ $createTableQueries = [
         size VARCHAR(10) NOT NULL,
         brand VARCHAR(255),
         registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        condition ENUM('excellent', 'very good', 'good', 'satisfactory') NOT NULL,
+        /* condition is a reserved keyword!!!!!!!!!!!!! */
+        `condition` ENUM('excellent', 'very good', 'good', 'satisfactory') NOT NULL,
         price DECIMAL(10, 2) NOT NULL,
         FOREIGN KEY (seller_id) REFERENCES Users(user_id),
         FOREIGN KEY (category_id) REFERENCES Category(id)
@@ -189,7 +186,26 @@ $createTableQueries = [
         price DECIMAL(10, 2) NOT NULL,
         FOREIGN KEY (buyer_id) REFERENCES Users(user_id),
         FOREIGN KEY (product_id) REFERENCES Products(product_id)
-    )"];
+    )","CREATE TABLE IF NOT EXISTS PreferenceBrands (
+        preference_id INT NOT NULL,
+        brand VARCHAR(255) NOT NULL,
+        PRIMARY KEY (preference_id, brand),
+        FOREIGN KEY (preference_id) REFERENCES Preferences(preference_id)
+    )",
+    "CREATE TABLE IF NOT EXISTS PreferenceSizes (
+        preference_id INT NOT NULL,
+        size VARCHAR(10) NOT NULL,
+        PRIMARY KEY (preference_id, size),
+        FOREIGN KEY (preference_id) REFERENCES Preferences(preference_id)
+    )",
+    "CREATE TABLE IF NOT EXISTS PreferenceCategories (
+        preference_id INT NOT NULL,
+        category_id INT NOT NULL,
+        PRIMARY KEY (preference_id, category_id),
+        FOREIGN KEY (preference_id) REFERENCES Preferences(preference_id),
+        FOREIGN KEY (category_id) REFERENCES Category(id)
+    )",
+    ];
 
     //Create the tables
     foreach ($createTableQueries as $query) {
@@ -210,7 +226,60 @@ $createTableQueries = [
             echo "Error inserting category $category: " . $conn->error . "\n";
         }
     }
+    //Insert a single product for testing purposes
+    /*Remember this is the database scheme:
+E TABLE IF NOT EXISTS Products (
+        product_id INT AUTO_INCREMENT PRIMARY KEY,
+        seller_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        category_id INT NOT NULL,
+        type VARCHAR(255) NOT NULL,
+        size VARCHAR(10) NOT NULL,
+        brand VARCHAR(255),
+        registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        `condition` ENUM('excellent', 'very good', 'good', 'satisfactory') NOT NULL,
+        price DECIMAL(10, 2) NOT NULL,
+        FOREIGN KEY (seller_id) REFERENCES Users(user_id),
+        FOREIGN KEY (category_id) REFERENCES Category(id)
+    )",
+    "CREATE TABLE IF NOT EXISTS ProductImages (
+        image_id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        image_url VARCHAR(255) NOT NULL,
+        FOREIGN KEY (product_id) REFERENCES Products(product_id)
+    )",
+
+    "CREATE TABLE IF NOT EXISTS Messages (
+        message_id INT AUTO_INCREMENT PRIMARY KEY,
+        chat_id INT NOT NULL,
+        sender_id INT NOT NULL,
+        content TEXT NOT NULL,
+        FOREIGN KEY (chat_id) REFERENCES Chats(chat_id),
+        FOREIGN KEY (sender_id) REFERENCES Users(user_id)
+    )",
+   
+
+    
+    */
+    $sql = "INSERT IGNORE INTO Products (seller_id, title, description, category_id, type, size, brand, `condition`, price) VALUES (1, 'Test product', 'This is a test product', 1, 'shirt', 'M', 'Nike', 'excellent', 20.00)";
+    //Dont forget the product images table
+    if (!$conn->query($sql)) {
+        echo "Error inserting product: " . $conn->error . "\n";
+    }
+    
+    if (!$conn->query($sql)) {
+        echo "Error inserting product: " . $conn->error . "\n";
+    }
+
+    
+    $sql = "INSERT IGNORE INTO ProductImages (product_id, image_url) VALUES (1, 'https://images.unsplash.com/photo-1581093458791-9d8a2a4b1b5a?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8c2hpcnQlMjBzaG9wfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80')";
+
+    if (!$conn->query($sql)) {
+        echo "Error inserting product image: " . $conn->error . "\n";
+    }
 
 }
-    
+
 ?>

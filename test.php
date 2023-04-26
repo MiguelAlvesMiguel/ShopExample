@@ -1,32 +1,45 @@
 <?php
-/*
-Users table:
+/*Remember this is the database scheme:
+E TABLE IF NOT EXISTS Products (
+        product_id INT AUTO_INCREMENT PRIMARY KEY,
+        seller_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        category_id INT NOT NULL,
+        type VARCHAR(255) NOT NULL,
+        size VARCHAR(10) NOT NULL,
+        brand VARCHAR(255),
+        registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-user_id: Integer, Auto-increment, Primary Key
-name: String (max length 255), Not Null
-date_of_birth: Date, Not Null
-gender: Enum ('F', 'M', 'Other'), Not Null
-address: String (max length 255), Not Null
-city: String (max length 255), Not Null
-postal_code: String (max length 10), Not Null
-phone: String (max length 20), Not Null
-email: String (max length 255), Not Null, Unique
-password_hash: String (max length 255), Not Null
-Category table:
+        `condition` ENUM('excellent', 'very good', 'good', 'satisfactory') NOT NULL,
+        price DECIMAL(10, 2) NOT NULL,
+        FOREIGN KEY (seller_id) REFERENCES Users(user_id),
+        FOREIGN KEY (category_id) REFERENCES Category(id)
+    )",
+    "CREATE TABLE IF NOT EXISTS ProductImages (
+        image_id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        image_url VARCHAR(255) NOT NULL,
+        FOREIGN KEY (product_id) REFERENCES Products(product_id)
+    )",
 
-id: Integer, Auto-increment, Primary Key
-name: String (max length 255), Not Null, Unique
-Preferences table:
+    "CREATE TABLE IF NOT EXISTS Messages (
+        message_id INT AUTO_INCREMENT PRIMARY KEY,
+        chat_id INT NOT NULL,
+        sender_id INT NOT NULL,
+        content TEXT NOT NULL,
+        FOREIGN KEY (chat_id) REFERENCES Chats(chat_id),
+        FOREIGN KEY (sender_id) REFERENCES Users(user_id)
+    )",
+   
 
-preference_id: Integer, Auto-increment, Primary Key
-user_id: Integer, Not Null, Foreign Key (Users table)
-category: Integer, Foreign Key (Category table)
-size: String (max length 10)
-brand: String (max length 255
-
-*/
+    
+    */
 include 'dbConnection.php';
+include 'createTables.php';
 echo "Hello World!";
+
+createTables($conn);
 
 // Print all users
 $sql = "SELECT * FROM Users";
@@ -43,4 +56,13 @@ if ($result->num_rows > 0) {
 } else {
     echo "0 results";
 }
+
+// Print all products
+$sql = "SELECT * FROM Products";
+$result = $conn->query($sql);
+
+  
+    while ($row = $result->fetch_assoc()) {
+        echo "id: " . $row["product_id"] . " - Seller: " . $row["seller_id"] . " - Title: " . $row["title"] . " - Description: " . $row["description"] . " - Category: " . $row["category_id"] . " - Type: " . $row["type"] . " - Size: " . $row["size"] . " - Brand: " . $row["brand"] . " - Condition: " . $row["condition"] . " - Price: " . $row["price"] . "<br>";
+    }
 ?>

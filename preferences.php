@@ -48,26 +48,38 @@
 </head>
 <body>
 
-   <!-- Navigation-->
-   <!-- Navigation-->
-   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<?php session_start(); ?>
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand" href="index.html">2HandCloth</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" onclick="window.location.href='index.html'" aria-current="page">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="prefs.html">Preferências</a></li>
-                <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li> 
-            </ul>
-                <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='SignIn.php';}login()">
+            <?php if (isset($_SESSION['user_id'])) { ?>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="prefs.html">Preferências</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <span>Bem-vindo, <?php echo $_SESSION['nome_completo']; ?></span>
+                    </div>
+                
+                </div>
+            <?php } else { ?>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Home</a></li>
+                </ul>
+                <a class="btn btn-outline-dark" href="SignIn.php">
                     <i class="bi bi-box-arrow-in-right"></i>
                     Login / Inscreva-se
-                    <!--<span class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
-                </button>
+                </a>
+            <?php } ?>
         </div>
     </div>
 </nav>
+
 	<div class="container mt-5">
 		<h1>Preferências De Utilizador</h1>
 		
@@ -83,10 +95,15 @@
 				<input class="form-check-input" type="checkbox" name="categories[]" value="Bottoms" id="bottoms">
 				<label class="form-check-label" for="bottoms">Bottoms</label>
 			</div>
+            
+            <div class="form-check">
+				<input class="form-check-input" type="checkbox" name="categories[]" value="Shoes" id="bottoms">
+				<label class="form-check-label" for="bottoms">Shoes</label>
+			</div>
 
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="categories[]" value="Dresses" id="dresses">
-                <label class="form-check-label" for="dresses">Dresses</label>
+                <input class="form-check-input" type="checkbox" name="categories[]" value="Acessories" id="dresses">
+                <label class="form-check-label" for="dresses">Acessories</label>
             </div>
             
             
@@ -95,50 +112,53 @@
 		</div>
 		
 		<!-- Sizes -->
-		<div class="form-group">
-			<label for="sizes">Sizes:</label>
-
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" name="sizes[]" value="XS" id="xs">
-				<label class="form-check-label" for="xs">XS</label>
-			</div>
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" name="sizes[]" value="S" id="s">
-				<label class="form-check-label" for="s">S</label>
-			</div>
-
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="sizes[]" value="M" id="m">
-                <label class="form-check-label" for="m">M</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="sizes[]" value="L" id="l">
-                <label class="form-check-label" for="l">L</label>
-            </div>
-
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" name="sizes[]" value="XL" id="xl">
-				<label class="form-check-label" for="xl">XL</label>
-			</div>
-		</div>
-		
-		<h3>Brands</h3>
+<div class="form-group">
+    <label for="sizes">Sizes:</label>
+    <?php
+           require 'dbConnection.php';
+        $sql_sizes = "SELECT DISTINCT size FROM Products";
+        $result_sizes = $conn->query($sql_sizes);
+        if ($result_sizes->num_rows > 0) {
+            // Output data of each row
+            while($row_sizes = $result_sizes->fetch_assoc()) {
+                $size = htmlspecialchars($row_sizes["size"]);
+                echo '<div class="form-check">';
+                echo '<input class="form-check-input" type="checkbox" name="sizes[]" value="' . $size . '" id="' . strtolower($size) . '">';
+                echo '<label class="form-check-label" for="' . strtolower($size) . '">' . $size . '</label>';
+                echo '</div>';
+            }
+        }
+    ?>
+</div>
+		<!-- Brands -->
+<h3>Brands</h3>
 <select name="Brands" multiple="true" class="form-control select-checkbox" size="5" style="width: 20%;">
-  <option>Dog</option>
-  <option>Cat</option>
-  <option>Hippo</option>
-  <option>Dinosaur</option>
-  <option>Another Dog</option>
+<?php
+    require 'dbConnection.php';
+  
+    $sql = "SELECT DISTINCT brand FROM Products";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        // Output data of each row
+        while($row = $result->fetch_assoc()) {
+            echo '<option>' . htmlspecialchars($row["brand"]) . '</option>';
+        }
+    }
+    else {
+        echo "<script>window.alert('No brands found!');</script>";
+    }
+?>
 </select>
 <br>
 
-        
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Save Preferences</button>
+        <br>
+        <br>
+        <!-- Logout Button -->
+        <a href="logout.php" class="btn btn-danger">Logout</a>
+
     </div>
     
-   
-
-
 </body>
 </html>    

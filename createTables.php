@@ -216,7 +216,9 @@ if ($stmt = $conn->prepare($sql)) {
                'title' => 'Leather Belt',        'description' => 'Leather Belt',        'category_id' => 4,        'type' => 'Belt',        'size' => 'XL',        'brand' => 'Gucci',        'condition' => 'satisfactory',        'price' => 100.00,],
         ];
     //Insert the products and their images in ProductImages
+    
     foreach ($products as $product) {
+
         $sql = "INSERT INTO Products (image_url, seller_id,  title, description, category_id, type, size, brand, `condition`, price) VALUES ('{$image_url}','{$product['seller_id']}', '{$product['title']}', '{$product['description']}', {$product['category_id']}, '{$product['type']}', '{$product['size']}', '{$product['brand']}', '{$product['condition']}', {$product['price']})";
         if (!$conn->query($sql)) {
             echo "Error inserting product: " . $conn->error . "\n";

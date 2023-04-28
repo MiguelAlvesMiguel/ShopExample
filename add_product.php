@@ -30,12 +30,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $preco = $_POST['preco'];
     $image_url = $_POST['image_url'];
 
-    $sql = "INSERT IGNORE INTO Products ( image_url, seller_id, title, description, category_id, type, size, brand, `condition`, price) VALUES ('$image_url', 1, '$titulo', '$descricao', '$categoria', '$genero', '$size', '$marca', '$condition', '$preco')";
+    $sql = "INSERT INTO Products ( image_url, seller_id, title, description, category_id, type, size, brand, `condition`, price) VALUES ('$image_url', 1, '$titulo', '$descricao', '$categoria', '$genero', '$size', '$marca', '$condition', '$preco')";
     $result = mysqli_query($conn, $sql);
     if ($result) {
-        echo "Produto adicionado com sucesso!";
+        
+        echo "<script>alert('Produto adicionado com sucesso!');</script>";
     } else {
-        echo "Erro ao adicionar produto!";
+        echo "<script>alert('Erro ao adicionar produto!');</script>";
     }
+    header("Location: index.php");
 }
 ?>

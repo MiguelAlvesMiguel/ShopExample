@@ -29,7 +29,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="preferences.php">Preferências</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="insert_product.php">Vender Produto</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
                     <div class="me-3">
@@ -84,10 +84,10 @@ $nameErr = $emailErr = $passwordErr = $cityErr = $postalErr = $phoneErr = $nifEr
              
                 <select id="categoria" name="categoria" required>
                   
-                    <option value="acessorios">Acessórios</option>
-                    <option value="parte_de_baixo">Parte de Baixo</option>
-                    <option value="sapatos">Sapatos</option>
-                    <option value="parte_de_cima">Parte de Cima</option>
+                    <option value="1">Acessórios</option>
+                    <option value="2">Parte de Baixo</option>
+                    <option value="3">Sapatos</option>
+                    <option value="4">Parte de Cima</option>
 </select>
               <span class="error"><?php echo $passwordErr;?></span>
             </div>

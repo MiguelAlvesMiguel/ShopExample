@@ -109,7 +109,7 @@ include 'dbConnection.php';
 include 'createTables.php';
 echo "Hello World!";
 
-createTables($conn);
+//createTables($conn);
 
 // Print all users
 $sql = "SELECT * FROM Users";

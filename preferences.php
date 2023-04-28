@@ -59,7 +59,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="preferences.php">Preferências</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="insert_product.php">Vender Produto</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
                     <div class="me-3">

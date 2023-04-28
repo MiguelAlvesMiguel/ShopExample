@@ -1,3 +1,51 @@
+<?php
+include 'dbConnection.php';
+
+session_start();
+$query = "SELECT p.*
+    FROM Products p
+    LEFT JOIN (
+        SELECT ps.preference_id, ps.size
+        FROM Preferences pr
+        JOIN PreferenceSizes ps ON pr.preference_id = ps.preference_id
+        WHERE pr.user_id = ?
+    ) t1 ON p.size = t1.size
+    LEFT JOIN (
+        SELECT pc.preference_id, pc.category_id
+        FROM Preferences pr
+        JOIN PreferenceCategories pc ON pr.preference_id = pc.preference_id
+        WHERE pr.user_id = ?
+    ) t2 ON p.category_id = t2.category_id
+    ORDER BY
+        CASE WHEN t1.preference_id IS NULL THEN 1 ELSE 0 END,
+        CASE WHEN t2.preference_id IS NULL THEN 1 ELSE 0 END,
+        p.registration_date DESC";
+
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, 'ii', $user_id, $user_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+$products = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $products[] = $row;
+}
+
+// Assuming you have a variable $user_id with the current user's ID
+$user_id = $_SESSION['user_id'];
+
+$query = "SELECT product_id FROM Favorites WHERE user_id = ?";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, 'i', $user_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+$favorite_products = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $favorite_products[] = $row['product_id'];
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -13,7 +61,11 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
         
-    
+        <style>
+        .favorite-icon.bi-star-fill {
+            color: #FFD700;
+        }
+    </style>
     <script>
 $('.form').find('input, textarea').on('keyup blur focus', function (e) {
   
@@ -62,7 +114,7 @@ $('.tab a').on('click', function (e) {
     </script>
     </head>
     <body>
-    <?php session_start(); ?>
+
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
@@ -108,13 +160,7 @@ $('.tab a').on('click', function (e) {
             </div>
         </header>
         <!-- Section-->
-        <?php
-include 'dbConnection.php';
-
-$query = "SELECT * FROM Products";
-$result = mysqli_query($conn, $query);
-$products = mysqli_fetch_all($result, MYSQLI_ASSOC);
-?>
+      
         <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -127,6 +173,9 @@ $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
                         <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="..." />
                         <div class="card-body p-4">
                             <div class="text-center">
+                                <!-- Add the 'bi-star' and 'bi-star-fill' classes depending on whether the product is a favorite -->
+<div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" data-product-id="<?php echo $product['product_id']; ?>"></div>
+
                                 <h5 class="fw-bolder"><?php echo htmlspecialchars($product['title']); ?></h5>
                                 <?php if ($product['type'] == 'Promoção'): ?>
                                     <span class="text-muted text-decoration-line-through"><?php echo htmlspecialchars($product['price']); ?>€</span>
@@ -156,5 +205,29 @@ $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+    
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteIcons = document.querySelectorAll('.favorite-icon');
+
+    favoriteIcons.forEach(icon => {
+        icon.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const isFavorite = this.classList.contains('bi-star-fill');
+
+            // Toggle the favorite state visually
+            this.classList.toggle('bi-star');
+            this.classList.toggle('bi-star-fill');
+
+            // Send an AJAX request to update the Favorites table
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'update_favorite.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send(`user_id=${encodeURIComponent(<?php echo $user_id; ?>)}&product_id=${encodeURIComponent(productId)}&is_favorite=${encodeURIComponent(!isFavorite)}`);
+        });
+    });
+});
+</script>
+
     </body>
 </html>

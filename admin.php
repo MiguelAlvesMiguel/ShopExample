@@ -1,3 +1,22 @@
+<?php
+    require 'dbConnection.php';
+
+    function getUsers($conn) {
+        $sql = "SELECT * FROM Users";
+        $result = mysqli_query($conn, $sql);
+
+        $users = [];
+
+        if (mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_assoc($result)) {
+                $users[] = $row;
+            }
+        }
+
+        return $users;
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,30 +109,33 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>John Doe</td>
-            <td>johndoe@example.com</td>
-            <td>New York, NY</td>
-            <td>10001</td>
-            <td>Male</td>
-            <td>18-25</td>
-        </tr>
-        <tr>
-            <td>Jane Doe</td>
-            <td>janedoe@example.com</td>
-            <td>Los Angeles, CA</td>
-            <td>90001</td>
-            <td>Female</td>
-            <td>26-35</td>
-        </tr>
-        <tr>
-            <td>Bob Smith</td>
-            <td>bobsmith@example.com</td>
-            <td>Chicago, IL</td>
-            <td>60601</td>
-            <td>Male</td>
-            <td>36-45</td>
-        </tr>
+        <?php
+            $users = getUsers($conn);
+            foreach ($users as $user) {
+                $birthDate = new DateTime($user['date_of_birth']);
+                $now = new DateTime();
+                $age = $now->diff($birthDate)->y;
+
+                if ($age >= 18 && $age <= 25) {
+                    $ageRange = "18-25";
+                } elseif ($age >= 26 && $age <= 35) {
+                    $ageRange = "26-35";
+                } elseif ($age >= 36 && $age <= 45) {
+                    $ageRange = "36-45";
+                } else {
+                    $ageRange = "Other";
+                }
+        ?>
+            <tr>
+                <td><?php echo $user['name']; ?></td>
+                <td><?php echo $user['email']; ?></td>
+                <td><?php echo $user['city']; ?></td>
+                <td><?php echo $user['postal_code']; ?></td>
+                <td><?php echo $user['gender']; ?></td>
+                <td><?php echo $ageRange; ?></td>
+            </tr>
+        <?php } ?>
+
         </tbody>
     </table>
 </div>

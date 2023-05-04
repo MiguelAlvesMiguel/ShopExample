@@ -201,9 +201,52 @@ $('.tab a').on('click', function (e) {
         </header>
         <!-- Section-->
         <form class="d-flex mb-4">
-    <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar" id="search-input">
-    <button class="btn btn-outline-dark" type="submit" id="search-button">Pesquisar</button>
+    <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar" id="search-bar" />
+    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false" aria-controls="filter-collapse">
+        <i class="bi bi-funnel"></i>
+        Filtros
+    </button>
 </form>
+
+<div class="collapse" id="filter-collapse">
+    <div class="card card-body">
+        <form>
+            <div class="row">
+                <div class="col-4">
+                    <label for="type-select" class="form-label">Tipo</label>
+                    <select class="form-select" id="type-select">
+                        <option value="">Todos</option>
+                        <?php foreach ($types as $type): ?>
+                            <option value="<?php echo $type['type_id']; ?>"><?php echo htmlspecialchars($type['type']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label for="category-select" class="form-label">Categoria</label>
+                    <select class="form-select" id="category-select">
+                        <option value="">Todas</option>
+                        <?php foreach ($categories as $category): ?>
+                            <option value="<?php echo $category['category_id']; ?>"><?php echo htmlspecialchars($category['category']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label for="size-select" class="form-label">Tamanho</label>
+                    <select class="form-select" id="size-select">
+                        <option value="">Todos</option>
+                        <?php foreach ($sizes as $size): ?>
+                            <option value="<?php echo $size['size']; ?>"><?php echo htmlspecialchars($size['size']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
         <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">

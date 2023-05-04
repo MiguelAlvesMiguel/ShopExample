@@ -18,7 +18,7 @@ function createTables($conn)
 
     // Create tables
     $createTableQueries = [
-        "CREATE TABLE IF NOT EXISTS Type (
+        "CREATE TABLE IF NOT EXISTS Types (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL UNIQUE
         )",
@@ -58,7 +58,7 @@ function createTables($conn)
             price DECIMAL(10, 2) NOT NULL,
             FOREIGN KEY (seller_id) REFERENCES Users(user_id),
             FOREIGN KEY (category_id) REFERENCES Category(id),
-            FOREIGN KEY (type_id) REFERENCES Type(id)
+            FOREIGN KEY (type_id) REFERENCES Types(id)
         )",
       
         "CREATE TABLE IF NOT EXISTS Favorites (
@@ -125,7 +125,7 @@ function createTables($conn)
         type_id INT NOT NULL,
         PRIMARY KEY (preference_id, type_id),
         FOREIGN KEY (preference_id) REFERENCES Preferences(preference_id),
-        FOREIGN KEY (type_id) REFERENCES Type(id)
+        FOREIGN KEY (type_id) REFERENCES Types(id)
     )",
     ];
 
@@ -151,7 +151,7 @@ function createTables($conn)
     $types = [ 'Calças', 'Casacos' , 'Camisolas' , 'Camisas' , 'T-Shirts' , 'Calçado' , 'Acessórios' , 'Vestidos' , 'Saias' , 'Calções' , 'Fatos de Banho' , 'Roupa Interior' , 'Outros' ];
 
     foreach ($types as $type) {
-        $sql = "INSERT IGNORE INTO Type (name) VALUES ('$type')";
+        $sql = "INSERT IGNORE INTO Types (name) VALUES ('$type')";
         if (!$conn->query($sql)) {
             echo "Error inserting type $type: " . $conn->error . "\n";
         }

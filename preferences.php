@@ -145,7 +145,7 @@ while ($row_categories = $result_categories->fetch_assoc()) {
             <div class="form-group">
                 <label for="types">Types:</label>
                 <?php
-                $sql_types = "SELECT * FROM Type";
+                $sql_types = "SELECT * FROM Types";
                 $result_types = $conn->query($sql_types);
                 if ($result_types->num_rows > 0) {
                     // Output data of each row

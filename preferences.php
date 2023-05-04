@@ -48,7 +48,50 @@
 </head>
 <body>
 
-<?php session_start(); ?>
+<?php
+    session_start();
+    require 'dbConnection.php';
+
+    $user_id = $_SESSION['user_id'];
+    $preferences = [];
+
+    // Get user preferences
+    $sql_pref = "SELECT preference_id FROM Preferences WHERE user_id = $user_id";
+    $result_pref = $conn->query($sql_pref);
+
+    if ($result_pref->num_rows > 0) {
+        $row_pref = $result_pref->fetch_assoc();
+        $preference_id = $row_pref['preference_id'];
+
+        // Get preference categories
+        $sql_categories = "SELECT category_id FROM PreferenceCategories WHERE preference_id = $preference_id";
+        $result_categories = $conn->query($sql_categories);
+      
+        echo "<script type='text/javascript'>alert('$result_categories');</script>";
+            
+
+        while ($row_categories = $result_categories->fetch_assoc()) {
+            $preferences['categories'][] = $row_categories['category_id'];
+            //The second idx is empty because the first idx is the category_id 
+        }
+          //Echo window alert the categories
+        // Get preference sizes
+        $sql_sizes = "SELECT size FROM PreferenceSizes WHERE preference_id = $preference_id";
+        $result_sizes = $conn->query($sql_sizes);
+
+        while ($row_sizes = $result_sizes->fetch_assoc()) {
+            $preferences['sizes'][] = $row_sizes['size'];
+        }
+
+        // Get preference brands
+        $sql_brands = "SELECT brand FROM PreferenceBrands WHERE preference_id = $preference_id";
+        $result_brands = $conn->query($sql_brands);
+
+        while ($row_brands = $result_brands->fetch_assoc()) {
+            $preferences['brands'][] = $row_brands['brand'];
+        }
+    }
+?>
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
@@ -86,70 +129,65 @@
 
 		
 		<!-- Categories -->
-		<div class="form-group">
-			<label for="categories">Categories:</label>
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" name="categories[]" value="Tops" id="tops">
-				<label class="form-check-label" for="tops">Tops</label>
-			</div>
+<div class="form-group">
+    <label for="categories">Categories:</label>
+    <?php
+        $categories = ['Mulher', 'Homem', 'Criança', 'Unisexo'];
+        foreach ($categories as $category) {
+            $checked = in_array($category, $preferences['categories']) ? 'checked' : '';
+            echo '<div class="form-check">';
+            echo '<input class="form-check-input" type="checkbox" name="categories[]" value="' . $category . '" id="' . strtolower($category) . '" ' . $checked . '>';
+            echo '<label class="form-check-label" for="' . strtolower($category) . '">' . $category . '</label>';
+            echo '</div>';
+        }
+    ?>
+</div>
 
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" name="categories[]" value="Bottoms" id="bottoms">
-				<label class="form-check-label" for="bottoms">Bottoms</label>
-			</div>
-            
-            <div class="form-check">
-				<input class="form-check-input" type="checkbox" name="categories[]" value="Shoes" id="bottoms">
-				<label class="form-check-label" for="bottoms">Shoes</label>
-			</div>
-
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="categories[]" value="Acessories" id="dresses">
-                <label class="form-check-label" for="dresses">Acessories</label>
-            </div>
-            
             
 
 
-	
-		<!-- Sizes -->
+<!-- Sizes -->
 <div class="form-group">
     <label for="sizes">Sizes:</label>
     <?php
-           require 'dbConnection.php';
         $sql_sizes = "SELECT DISTINCT size FROM Products";
         $result_sizes = $conn->query($sql_sizes);
         if ($result_sizes->num_rows > 0) {
             // Output data of each row
             while($row_sizes = $result_sizes->fetch_assoc()) {
                 $size = htmlspecialchars($row_sizes["size"]);
+                $checked = in_array($size, $preferences['sizes']) ? 'checked' : '';
                 echo '<div class="form-check">';
-                echo '<input class="form-check-input" type="checkbox" name="sizes[]" value="' . $size . '" id="' . strtolower($size) . '">';
+                echo '<input class="form-check-input" type="checkbox" name="sizes[]" value="' . $size . '" id="' . strtolower($size) . '" ' . $checked . '>';
                 echo '<label class="form-check-label" for="' . strtolower($size) . '">' . $size . '</label>';
                 echo '</div>';
             }
         }
+        else {
+            echo "<script>window.alert('No sizes found!');</script>";
+        }
     ?>
 </div>
-		<!-- Brands -->
+
+	<!-- Brands -->
 <h3>Brands</h3>
 <select name="brands[]" multiple="true" class="form-control select-checkbox" size="5" style="width: 20%;">
 <?php
-    require 'dbConnection.php';
-  
     $sql = "SELECT DISTINCT brand FROM Products";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         // Output data of each row
         while($row = $result->fetch_assoc()) {
-            echo '<option>' . htmlspecialchars($row["brand"]) . '</option>';
+            $brand = htmlspecialchars($row["brand"]);
+            $selected = in_array($brand, $preferences['brands']) ? 'selected' : '';
+            echo '<option value="' . $brand . '" ' . $selected . '>' . $brand . '</option>';
         }
-    }
-    else {
+    } else {
         echo "<script>window.alert('No brands found!');</script>";
     }
 ?>
 </select>
+
 <br>
 
         <!-- Submit Button -->

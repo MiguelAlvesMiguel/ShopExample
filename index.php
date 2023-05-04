@@ -60,6 +60,8 @@ while ($row = mysqli_fetch_assoc($result)) {
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+        <!--  IMPORT JSQUERY-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         
         <style>
         .favorite-icon.bi-star-fill {
@@ -167,9 +169,7 @@ $('.tab a').on('click', function (e) {
             <?php foreach ($products as $product): ?>
                 <div class="col mb-5">
                     <div class="card h-100">
-                        <?php if ($product['type'] == 'Promoção'): ?>
-                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Promoção</div>
-                        <?php endif; ?>
+                    
                         <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="..." />
                         <div class="card-body p-4">
                             <div class="text-center">
@@ -177,14 +177,9 @@ $('.tab a').on('click', function (e) {
 <div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" data-product-id="<?php echo $product['product_id']; ?>"></div>
 
                                 <h5 class="fw-bolder"><?php echo htmlspecialchars($product['title']); ?></h5>
-                                <?php if ($product['type'] == 'Promoção'): ?>
-                                    <span class="text-muted text-decoration-line-through"><?php echo htmlspecialchars($product['price']); ?>€</span>
-                                    <!-- Calculate the new price based on the desired discount percentage, e.g., 30% -->
-                                    <?php $discountedPrice = $product['price'] * (1 - 0.3); ?>
-                                    <?php echo htmlspecialchars(number_format($discountedPrice, 2)); ?>€
-                                <?php else: ?>
+                                
                                     <?php echo htmlspecialchars($product['price']); ?>€
-                                <?php endif; ?>
+
                             </div>
                         </div>
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">

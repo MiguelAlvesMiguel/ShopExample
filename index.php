@@ -202,6 +202,10 @@ $('.tab a').on('click', function (e) {
         <!-- Section-->
         <form class="d-flex mb-4">
     <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar" id="search-bar" />
+            <!-- searchsame as above but with 30% width and centered -->
+
+
+
     <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false" aria-controls="filter-collapse">
         <i class="bi bi-funnel"></i>
         Filtros
@@ -313,20 +317,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-</script>
-<script>
-$(document).ready(function() {
-    $('#search-input').on('keyup', function() {
-        var value = $(this).val().toLowerCase();
-        $('.card').filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-    });
-});
-</script>
-<script>
+
 document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('#search-input');
+    const searchInput = document.querySelector('#search-bar');
     const productItems = document.querySelectorAll('.product-item');
 
     searchInput.addEventListener('input', function() {

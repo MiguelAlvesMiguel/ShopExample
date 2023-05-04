@@ -61,8 +61,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")  {
                         $_SESSION['telefone'] = $row['phone'];
                         $_SESSION['data_nascimento'] = $row['date_of_birth'];
                         $_SESSION['genero'] = $row['gender'];
-                        echo '<script>alert("Login Sucessful")</script>';
-                            header('Location: index.php');
+                        //echo '<script>alert("Login Sucessful")</script>';
+                        echo "<script>window.location.href = 'index.php';</script>";
+
                     } else {
                         echo "<script>window.alert('Login Failed: Invalid email or password.');</script>";
                     }
@@ -78,6 +79,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")  {
             echo "<script>window.alert('Login Failed: " . $conn->error . "');</script>";
         }
     }
+
+echo "<script>window.location.href = 'SignIn.php';</script>";
+
+
 }
-                    
 ?>

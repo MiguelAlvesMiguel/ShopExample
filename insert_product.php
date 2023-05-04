@@ -1,26 +1,67 @@
 <!DOCTYPE html>
+<html lang="en">
+
 <head>
-   
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>2HandCloth</title>
-       
-        <!-- Bootstrap icons-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/login.css" rel="stylesheet" />
-        <link href="css/styles.css" rel="stylesheet" />
-        <!-- include js/scripts.js-->
-        <script src="js/scripts.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>2HandCloth</title>
+
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/login.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <!-- include js/scripts.js-->
+    <script src="js/scripts.js"></script>
+
+    <style>
+        .form {
+            max-width: 700px;
+            margin: 30px auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
 
 </head>
 
+
 <body>
 <?php session_start(); ?>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand" href="index.php">2HandCloth</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -84,23 +125,26 @@ $nameErr = $emailErr = $passwordErr = $cityErr = $postalErr = $phoneErr = $nifEr
              
                 <select id="categoria" name="categoria" required>
                   
-                    <option value="1">Acessórios</option>
-                    <option value="2">Parte de Baixo</option>
-                    <option value="3">Sapatos</option>
-                    <option value="4">Parte de Cima</option>
+                    <option value="1">Mulher</option>
+                    <option value="2">Homem</option>
+                    <option value="3">Criança</option>
+                    <option value="4">Unisexo</option>
 </select>
               <span class="error"><?php echo $passwordErr;?></span>
             </div>
 
             <br>    
             <div class="field-wrap">
-                <label for="genero" style="position: initial;">Genero:</label>
+                <label for="tipo" style="position: initial;">Tipo:</label>
              
-                <select id="genero" name="genero" required>
-           
-                    <option value="Masculino">Masculino</option>
-                    <option value="Femenino">Femenino</option>
-                    <option value="Outro">Outro</option>
+                <select id="tipo" name="tipo" required>
+                  <?php
+                      $types = [ 'Calças', 'Casacos' , 'Camisolas' , 'Camisas' , 'T-Shirts' , 'Calçado' , 'Acessórios' , 'Vestidos' , 'Saias' , 'Calções' , 'Fatos de Banho' , 'Roupa Interior' , 'Outros' ];
+                      foreach ($types as $type) {
+                          echo "<option value='$type'>$type</option>";
+                      }
+
+                    ?>
                 </select>
         
             </div>
@@ -208,4 +252,6 @@ $('.tab a').on('click', function (e) {
 });
 
 </script>
+
+
 </body>

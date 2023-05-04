@@ -139,7 +139,7 @@ function createTables($conn)
     }
 
     // Insert simple unisex categories if they don't exist
-    $categories = [ 'Mulhet','Homem' , 'Criança','Unisexo'];
+    $categories = [ 'Mulher','Homem' , 'Criança','Unisexo'];
 
     foreach ($categories as $category) {
         $sql = "INSERT IGNORE INTO Category (name) VALUES ('$category')";
@@ -171,6 +171,7 @@ function createTables($conn)
         'brand' => 'Levis',
         'condition' => 'excellent',
         'price' => 50.00,
+        //'image_url' => 'Metam aqui o link da imagem',
     ],
     [
         'seller_id' => 1,

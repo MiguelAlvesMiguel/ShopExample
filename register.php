@@ -94,7 +94,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-header("Location: SignIn.php");
+echo "<script>window.location.href = 'SignIn.php';</script>";
+
 // Close the database connection
 $conn->close();
 ?>

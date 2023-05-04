@@ -288,6 +288,56 @@ function createTables($conn)
     ],
         ];
         
+// Like above but with different products and with seller_id = 2
+$products2 = [
+    [
+        'seller_id' => 2,
+        'title' => 'Women\'s Black Leather Boots',
+        'description' => 'Stylish black leather boots for women',
+        'category_id' => 1,
+        'type_id' => 1,
+        'size' => '8',
+        'brand' => 'Steve Madden',
+        'condition' => 'excellent',
+        'price' => 120.00,
+    ],
+    [
+        'seller_id' => 2,
+        'title' => 'Men\'s Denim Jacket',
+        'description' => 'Cool denim jacket for men',
+        'category_id' => 2,
+        'type_id' => 3,
+        'size' => 'M',
+        'brand' => 'Calvin Klein',
+        'condition' => 'very good',
+        'price' => 75.00,
+    ],
+    [
+        'seller_id' => 2,
+        'title' => 'Children\'s Yellow Raincoat',
+        'description' => 'Bright yellow raincoat for children',
+        'category_id' => 3,
+        'type_id' => 6,
+        'size' => '4T',
+        'brand' => 'Columbia',
+        'condition' => 'good',
+        'price' => 35.00,
+    ],
+    [
+        'seller_id' => 2,
+        'title' => 'Unisex Aviator Sunglasses',
+        'description' => 'Classic aviator sunglasses for all',
+        'category_id' => 4,
+        'type_id' => 7,
+        'size' => 'One size',
+        'brand' => 'Ray-Ban',
+        'condition' => 'satisfactory',
+        'price' => 80.00,
+    ],
+];
+
+
+
 
 
 

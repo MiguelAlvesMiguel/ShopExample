@@ -2,27 +2,65 @@
 include 'dbConnection.php';
 
 session_start();
-$query = "SELECT p.*
-    FROM Products p
-    LEFT JOIN (
-        SELECT ps.preference_id, ps.size
-        FROM Preferences pr
-        JOIN PreferenceSizes ps ON pr.preference_id = ps.preference_id
-        WHERE pr.user_id = ?
-    ) t1 ON p.size = t1.size
-    LEFT JOIN (
-        SELECT pc.preference_id, pc.category_id
-        FROM Preferences pr
-        JOIN PreferenceCategories pc ON pr.preference_id = pc.preference_id
-        WHERE pr.user_id = ?
-    ) t2 ON p.category_id = t2.category_id
-    ORDER BY
-        CASE WHEN t1.preference_id IS NULL THEN 1 ELSE 0 END,
-        CASE WHEN t2.preference_id IS NULL THEN 1 ELSE 0 END,
-        p.registration_date DESC";
+// Set default user ID if user is not logged in
+$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : -1;
+// Get user preferences if user is logged in
+if ($user_id != -1) {
+    $sql_preferences = "SELECT PreferenceTypes.type_id, PreferenceCategories.category_id, PreferenceSizes.size FROM Preferences
+    LEFT JOIN PreferenceTypes ON Preferences.preference_id = PreferenceTypes.preference_id
+    LEFT JOIN PreferenceCategories ON Preferences.preference_id = PreferenceCategories.preference_id
+    LEFT JOIN PreferenceSizes ON Preferences.preference_id = PreferenceSizes.preference_id
+    WHERE Preferences.user_id = $user_id";
+    $result_preferences = $conn->query($sql_preferences);
 
+    $preferred_types = [];
+    $preferred_categories = [];
+    $preferred_sizes = [];
+
+    while ($row_preferences = $result_preferences->fetch_assoc()) {
+        if (!empty($row_preferences['type_id'])) {
+            $preferred_types[] = $row_preferences['type_id'];
+        }
+        if (!empty($row_preferences['category_id'])) {
+            $preferred_categories[] = $row_preferences['category_id'];
+        }
+        if (!empty($row_preferences['size'])) {
+            $preferred_sizes[] = $row_preferences['size'];
+        }
+    }
+
+    $preferred_types = array_unique($preferred_types);
+    $preferred_categories = array_unique($preferred_categories);
+    $preferred_sizes = array_unique($preferred_sizes);
+}
+
+
+// Get all products ordered by user preferences, or without any order if user is not logged in
+$query = "SELECT Products.* FROM Products WHERE seller_id != ?";
+$order_by = [];
+if ($user_id != -1) {
+    if (!empty($preferred_types)) {
+        $types_str = implode(',', $preferred_types);
+        $order_by[] = "FIELD(type_id, $types_str) DESC";
+    }
+    if (!empty($preferred_categories)) {
+        $categories_str = implode(',', $preferred_categories);
+        $order_by[] = "FIELD(category_id, $categories_str) DESC";
+    }
+    if (!empty($preferred_sizes)) {
+        $sizes_str = "'" . implode("','", $preferred_sizes) . "'";
+        $order_by[] = "FIELD(size, $sizes_str) DESC";
+    }
+}
+if (!empty($order_by)) {
+    $order_by_str = implode(',', $order_by);
+    $query .= " ORDER BY $order_by_str";
+}
+
+$idFake=10;
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, 'ii', $user_id, $user_id);
+mysqli_stmt_bind_param($stmt, 'i', $idFake);
+
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
@@ -31,21 +69,21 @@ while ($row = mysqli_fetch_assoc($result)) {
     $products[] = $row;
 }
 
-// Assuming you have a variable $user_id with the current user's ID
-$user_id = $_SESSION['user_id'];
-
-$query = "SELECT product_id FROM Favorites WHERE user_id = ?";
-$stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, 'i', $user_id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-
+// Get favorite products if user is logged in
 $favorite_products = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $favorite_products[] = $row['product_id'];
-}
+if ($user_id != -1) {
+    $query = "SELECT product_id FROM Favorites WHERE user_id = ?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
+    while ($row = mysqli_fetch_assoc($result)) {
+        $favorite_products[] = $row['product_id'];
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -162,28 +200,37 @@ $('.tab a').on('click', function (e) {
             </div>
         </header>
         <!-- Section-->
-      
+        <form class="d-flex mb-4">
+    <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar" id="search-input">
+    <button class="btn btn-outline-dark" type="submit" id="search-button">Pesquisar</button>
+</form>
+
         <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             <?php foreach ($products as $product): ?>
-                <div class="col mb-5">
+                <div class="col mb-5 product-item" data-title="<?php echo htmlspecialchars($product['title']); ?>">
                     <div class="card h-100">
-                    
                         <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="..." />
                         <div class="card-body p-4">
                             <div class="text-center">
-                                <!-- Add the 'bi-star' and 'bi-star-fill' classes depending on whether the product is a favorite -->
-<div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" data-product-id="<?php echo $product['product_id']; ?>"></div>
-
+                                <!-- if the user is logged in show the star icon to favorite the product -->
+                                <?php if (isset($_SESSION['user_id'])) { ?>
+                                    <div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" data-product-id="<?php echo $product['product_id']; ?>"></div>
+                                <?php } ?>
                                 <h5 class="fw-bolder"><?php echo htmlspecialchars($product['title']); ?></h5>
-                                
-                                    <?php echo htmlspecialchars($product['price']); ?>€
-
+                                <?php echo htmlspecialchars($product['price']); ?>€
                             </div>
                         </div>
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Carrinho</a></div>
+                            <div class="text-center">
+                                <?php if (isset($_SESSION['user_id'])) { ?>
+                                    <div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" data-product-id="<?php echo $product['product_id']; ?>"></div>
+                                    <a class="btn btn-outline-dark mt-auto" href="#">Carrinho</a>
+                                <?php } else { ?>
+                                    <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Carrinho</a>
+                                <?php } ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -191,6 +238,7 @@ $('.tab a').on('click', function (e) {
         </div>
     </div>
 </section>
+
 
         <!-- Footer-->
         <footer class="py-5 bg-dark">
@@ -219,6 +267,34 @@ document.addEventListener('DOMContentLoaded', function() {
             xhr.open('POST', 'update_favorite.php', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.send(`user_id=${encodeURIComponent(<?php echo $user_id; ?>)}&product_id=${encodeURIComponent(productId)}&is_favorite=${encodeURIComponent(!isFavorite)}`);
+        });
+    });
+});
+</script>
+<script>
+$(document).ready(function() {
+    $('#search-input').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('.card').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('#search-input');
+    const productItems = document.querySelectorAll('.product-item');
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        productItems.forEach(item => {
+            const title = item.dataset.title.toLowerCase();
+            if (title.includes(searchTerm)) {
+                item.classList.remove('d-none');
+            } else {
+                item.classList.add('d-none');
+            }
         });
     });
 });

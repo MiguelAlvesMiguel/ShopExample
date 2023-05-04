@@ -24,7 +24,7 @@
     include 'dbConnection.php';
     include 'createTables.php'; // Creates tables if they don't exist
 
-    createTables($conn);
+    //createTables($conn);
 
     $tables = [
         "Type", "Users", "Category", "Preferences", "Products",

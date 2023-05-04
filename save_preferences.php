@@ -48,7 +48,22 @@ if ($result_check->num_rows > 0) {
     $stmt_insert_pref->execute();
     $preference_id = $stmt_insert_pref->insert_id;
 }
+// Delete existing PreferenceTypes
+$sql_delete_types = "DELETE FROM PreferenceTypes WHERE preference_id = ?";
+$stmt_delete_types = $conn->prepare($sql_delete_types);
+$stmt_delete_types->bind_param("i", $preference_id);
+$stmt_delete_types->execute();
 
+// Add types
+if (!empty($_POST['types'])) {
+    foreach ($_POST['types'] as $type_id) {
+        $type_id = intval($type_id);
+        $sql_insert = "INSERT INTO PreferenceTypes (preference_id, type_id) VALUES (?, ?)";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bind_param("ii", $preference_id, $type_id);
+        $stmt_insert->execute();
+    }
+}
 // Delete existing preferences
 $sql_delete_brands = "DELETE FROM PreferenceBrands WHERE preference_id = ?";
 $sql_delete_sizes = "DELETE FROM PreferenceSizes WHERE preference_id = ?";

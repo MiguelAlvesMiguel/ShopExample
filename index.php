@@ -1,87 +1,28 @@
 <?php
+
+
+
 include 'dbConnection.php';
 
 session_start();
+
 // Set default user ID if user is not logged in
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : -1;
 // Get user preferences if user is logged in
 if ($user_id != -1) {
-    $sql_preferences = "SELECT PreferenceTypes.type_id, PreferenceCategories.category_id, PreferenceSizes.size FROM Preferences
-    LEFT JOIN PreferenceTypes ON Preferences.preference_id = PreferenceTypes.preference_id
-    LEFT JOIN PreferenceCategories ON Preferences.preference_id = PreferenceCategories.preference_id
-    LEFT JOIN PreferenceSizes ON Preferences.preference_id = PreferenceSizes.preference_id
-    WHERE Preferences.user_id = $user_id";
-    $result_preferences = $conn->query($sql_preferences);
-
-    $preferred_types = [];
-    $preferred_categories = [];
-    $preferred_sizes = [];
-
-    while ($row_preferences = $result_preferences->fetch_assoc()) {
-        if (!empty($row_preferences['type_id'])) {
-            $preferred_types[] = $row_preferences['type_id'];
-        }
-        if (!empty($row_preferences['category_id'])) {
-            $preferred_categories[] = $row_preferences['category_id'];
-        }
-        if (!empty($row_preferences['size'])) {
-            $preferred_sizes[] = $row_preferences['size'];
-        }
-    }
-
-    $preferred_types = array_unique($preferred_types);
-    $preferred_categories = array_unique($preferred_categories);
-    $preferred_sizes = array_unique($preferred_sizes);
+    $result_preferences = $soap->call('getUserPreferences', array('user_id' => $user_id));
+    //TODO: Put the code here
 }
 
 
-// Get all products ordered by user preferences, or without any order if user is not logged in
-$query = "SELECT Products.* FROM Products WHERE seller_id != ?";
-$order_by = [];
-if ($user_id != -1) {
-    if (!empty($preferred_types)) {
-        $types_str = implode(',', $preferred_types);
-        $order_by[] = "FIELD(type_id, $types_str) DESC";
-    }
-    if (!empty($preferred_categories)) {
-        $categories_str = implode(',', $preferred_categories);
-        $order_by[] = "FIELD(category_id, $categories_str) DESC";
-    }
-    if (!empty($preferred_sizes)) {
-        $sizes_str = "'" . implode("','", $preferred_sizes) . "'";
-        $order_by[] = "FIELD(size, $sizes_str) DESC";
-    }
-}
-if (!empty($order_by)) {
-    $order_by_str = implode(',', $order_by);
-    $query .= " ORDER BY $order_by_str";
-}
+// Get all products
+$products = $soap->call('getAllProducts', array('user_id' => $user_id));
 
-$idFake=10;
-$stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, 'i', $idFake);
-
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-
-$products = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $products[] = $row;
-}
 
 // Get favorite products if user is logged in
-$favorite_products = [];
-if ($user_id != -1) {
-    $query = "SELECT product_id FROM Favorites WHERE user_id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, 'i', $user_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+$favorite_products = $soap->call('getFavoriteProducts', array('user_id' => $user_id));
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        $favorite_products[] = $row['product_id'];
-    }
-}
+echo '<script>window.alert("'.$result.'");</script>';
 ?>
 
 <!DOCTYPE html>
@@ -188,8 +129,6 @@ $('.tab a').on('click', function (e) {
         </div>
     </div>
 </nav>
-
-
         <!-- Header-->
         <header class="bg-dark py-5">
             <div class="container px-4 px-lg-5 my-5">
@@ -272,7 +211,6 @@ $('.tab a').on('click', function (e) {
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                             <div class="text-center">
                                 <?php if (isset($_SESSION['user_id'])) { ?>
-                                    <div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" data-product-id="<?php echo $product['product_id']; ?>"></div>
                                     <a class="btn btn-outline-dark mt-auto" href="#">Carrinho</a>
                                 <?php } else { ?>
                                     <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Carrinho</a>

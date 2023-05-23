@@ -1,8 +1,20 @@
 <?php
-
-
-
 include 'dbConnection.php';
+function checkSoapError($soap) {
+    // Check for a fault
+    if ($soap->fault) {
+        echo '<h2>Fault</h2><pre>';
+        print_r($soap->fault);
+        echo '</pre>';
+    } else {
+        // Check for errors
+        $error = $soap->getError();
+        if ($error) {
+            // Display the error
+            echo '<h2>Error</h2><pre>' . $error . '</pre>';
+        }
+    }
+}
 
 session_start();
 
@@ -11,18 +23,17 @@ $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : -1;
 // Get user preferences if user is logged in
 if ($user_id != -1) {
     $result_preferences = $soap->call('getUserPreferences', array('user_id' => $user_id));
-    //TODO: Put the code here
+    checkSoapError($soap);
 }
 
 
 // Get all products
 $products = $soap->call('getAllProducts', array('user_id' => $user_id));
-
+checkSoapError($soap);
 
 // Get favorite products if user is logged in
 $favorite_products = $soap->call('getFavoriteProducts', array('user_id' => $user_id));
-
-echo '<script>window.alert("'.$result.'");</script>';
+checkSoapError($soap);
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +52,7 @@ echo '<script>window.alert("'.$result.'");</script>';
         <link href="css/styles.css" rel="stylesheet" />
         <!--  IMPORT JSQUERY-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
         <style>
         .favorite-icon.bi-star-fill {
             color: #FFD700;
@@ -142,9 +153,6 @@ $('.tab a').on('click', function (e) {
         <form class="d-flex mb-4">
     <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar" id="search-bar" />
             <!-- searchsame as above but with 30% width and centered -->
-
-
-
     <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false" aria-controls="filter-collapse">
         <i class="bi bi-funnel"></i>
         Filtros
@@ -195,7 +203,7 @@ $('.tab a').on('click', function (e) {
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             <?php foreach ($products as $product): ?>
-                <div class="col mb-5 product-item" data-title="<?php echo htmlspecialchars($product['title']); ?>">
+                <div class="col mb-5 product-item" id="product-<?php echo $product['product_id']; ?>" data-title="<?php echo htmlspecialchars($product['title']); ?>">
                     <div class="card h-100">
                         <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="..." />
                         <div class="card-body p-4">
@@ -211,7 +219,7 @@ $('.tab a').on('click', function (e) {
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                             <div class="text-center">
                                 <?php if (isset($_SESSION['user_id'])) { ?>
-                                    <a class="btn btn-outline-dark mt-auto" href="#">Carrinho</a>
+                                    <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Carrinho</a>
                                 <?php } else { ?>
                                     <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Carrinho</a>
                                 <?php } ?>
@@ -235,6 +243,35 @@ $('.tab a').on('click', function (e) {
         <script src="js/scripts.js"></script>
     
         <script>
+
+
+
+
+
+
+
+
+
+<div class="modal fade" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="purchaseModalLabel">Purchase Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="purchaseModalBody">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const favoriteIcons = document.querySelectorAll('.favorite-icon');
 
@@ -270,6 +307,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.classList.add('d-none');
             }
         });
+    });
+});
+
+
+</script>
+
+<script>
+$(document).ready(function(){
+    $(".carrinho-button").click(function(){
+        var product_id = $(this).data('product-id');
+        var seller_id = $(this).data('seller-id');
+        $.ajax({
+    url: 'purchaseProduct.php',
+    type: 'post',
+    data: {product_id: product_id, seller_id: seller_id},
+    success: function(response) {
+        // Convert the response to a string
+        var responseStr = String(response).trim();
+        
+        if (responseStr == "Aceite") {
+            // Remove the product from the page
+            $("#product-" + product_id).remove();
+            // Set the modal message
+            modalBody.text("Order Successful!");
+        } else {
+            // Set the modal message
+            modalBody.text("Order Failed: " + responseStr);
+        }
+        // Show the modal
+        $("#purchaseModal").modal('show');
+    
+    }
+});
+
+
     });
 });
 </script>

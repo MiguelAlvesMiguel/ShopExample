@@ -8,9 +8,12 @@ global $soap;
 // Set default user ID if user is not logged in
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : -1;
 
+//echo '<script>window.alert("user_id: ' . $user_id . '");</script>';
 // Get user preferences if user is not logged in
 if ($user_id != -1) {
     $result_preferences = $soap->call('getUserPreferences', array('user_id' => $user_id));
+    // Show result if there is no error
+
     checkSoapError($soap);
 }
 
@@ -61,6 +64,15 @@ foreach ($result_preferences as $preference) {
     $category_id = $preference['category_id'];
     $size = $preference['size'];
     echo "<tr><td>$type_id</td><td>$category_id</td><td>$size</td></tr>";
+}
+
+echo "</table>";
+
+echo "<h1>Favorite Products</h1>";
+echo "<table border='1'>";
+echo "<tr><th>Product ID</th></tr>";
+foreach ($favorite_products as $product_id) {
+    echo "<tr><td>$product_id</td></tr>";
 }
 
 echo "</table>";

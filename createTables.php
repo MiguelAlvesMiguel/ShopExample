@@ -96,6 +96,7 @@ function createTables($conn)
         "CREATE TABLE IF NOT EXISTS Transactions (
         transaction_id INT AUTO_INCREMENT PRIMARY KEY,
         buyer_id INT NOT NULL,
+        seller_id INT NOT NULL,
         product_id INT NOT NULL,
         purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         price DECIMAL(10, 2) NOT NULL,

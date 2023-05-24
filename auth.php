@@ -45,9 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         else {$password = password_hash($password, PASSWORD_DEFAULT);}
         //Hash the password
-        
-
-
+    
         // Check if the user already exists
         $sql = "SELECT * FROM users WHERE email = '$email'";
         $result = $conn->query($sql);

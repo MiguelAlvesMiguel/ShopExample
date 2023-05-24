@@ -148,7 +148,8 @@ $('.tab a').on('click', function (e) {
             </div>
         </header>
         <!-- Section-->
-        <form class="d-flex mb-4">
+        <br><br>
+        <form class="d-flex mb-4" style="justify-content: center;">
     <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar" id="search-bar" />
             <!-- searchsame as above but with 30% width and centered -->
     <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false" aria-controls="filter-collapse">
@@ -217,14 +218,17 @@ $('.tab a').on('click', function (e) {
                             </div>
                         </div>
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center">
-                                <?php if (isset($_SESSION['user_id'])) { ?>
-                                    <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Comprar</a>
-                                <?php } else { ?>
-                                    <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Comprar</a>
-                                <?php } ?>
-                            </div>
-                        </div>
+    <div class="text-center">
+        <?php if (isset($_SESSION['user_id'])) { ?>
+            <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Comprar</a>
+            <?php if ($_SESSION['user_id'] != $product['seller_id']) { ?>
+                <a class="btn btn-outline-dark mt-auto chat-button" href="chat.php?product_id=<?php echo $product['product_id']; ?>&seller_id=<?php echo $product['seller_id']; ?>">Chat</a>
+            <?php } ?>
+        <?php } else { ?>
+            <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Comprar</a>
+        <?php } ?>
+    </div>
+</div>
                     </div>
                 </div>
                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
@@ -271,6 +275,8 @@ $('.tab a').on('click', function (e) {
         </div>
     </div>
 </section>
+
+
 
 
         <!-- Footer-->
@@ -369,9 +375,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     ?>; // Initialize with the ID of the latest product currently displayed
-    alert("Latest product ID: " + latestProductId);
+    //alert("Latest product ID: " + latestProductId);
 
-setInterval(function() {
+    setInterval(function() {
     // Call the SOAP method to get the latest product ID
     $.ajax({
         url: 'getLatestProductId.php',
@@ -381,7 +387,6 @@ setInterval(function() {
             if (receivedProductId > latestProductId) {
                 // A new product has been added
                 latestProductId = receivedProductId;
-                alert("New product ID: " + latestProductId);
                 // Call another SOAP method to get the details of the new product
                 $.ajax({
                     url: 'getProductById.php',
@@ -391,12 +396,29 @@ setInterval(function() {
                         response = JSON.parse(product);
             
                         // Display the product details in a notification
-                        alert(`New product added: title: ${response['title']}, description: ${response['description']}, category: ${response['category_id']}, type: ${response['type_id']}, size: ${response['size']}, brand: ${response['brand']}, condition: ${response['condition']}, price: ${response['price']}`);
+                        if (!("Notification" in window)) {
+                            alert("This browser does not support desktop notification");
+                        }
+                        else if (Notification.permission === "granted") {
+                            var options = {
+                                body: `Novo produto adicionado!: title: ${response['title']}, description: ${response['description']}, category: ${response['category_id']}, type: ${response['type_id']}, size: ${response['size']}, brand: ${response['brand']}, condition: ${response['condition']}, price: ${response['price']}`,
+                                icon: 'icon.jpg', // path to the icon of the notification
+                            };
+                            var notification = new Notification("New Product", options);
+                        }
+                        else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission(function (permission) {
+                                if (permission === "granted") {
+                                    var options = {
+                                        body: `Novo produto adicionado!: ${response['title']}, condition: ${response['condition']}, price: ${response['price']}`,
+                                        icon: 'icon.jpg', // path to the icon of the notification
+                                    };
+                                    var notification = new Notification("New Product", options);
+                                }
+                            });
+                        }
                     }
                 });
-            }
-            else{
-                alert("No new products");
             }
         }
     });

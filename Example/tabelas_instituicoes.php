@@ -118,7 +118,7 @@
   $result = $conn->query($sql);
   if ($result->num_rows > 0) {
   // output data of each row
-  echo "<table id='table'><caption id='caption' class='mb-4'>Preferências Instituições</caption><tr><th>Id Instituição</th><th>Tipo de Instituição</th><th>Tipo da Doação</th><th>quantidade</th></tr>";
+  echo "<table id='table'><caption id='caption' class='mb-4'>Preferences Instituições</caption><tr><th>Id Instituição</th><th>Tipo de Instituição</th><th>Tipo da Doação</th><th>quantidade</th></tr>";
   echo "<p></p>";
   while($row = $result->fetch_assoc()) {
     echo "<tr><td>" . $row["id"]."</td>";
@@ -127,7 +127,7 @@
     echo "<td>" . $row["quantidade"]."</td></tr>";   
   }
   } else {
-  echo "Sem Preferências de Instituições Parceiras";
+  echo "Sem Preferences de Instituições Parceiras";
   }
 
   //tabela relacoes instituição-voluntario

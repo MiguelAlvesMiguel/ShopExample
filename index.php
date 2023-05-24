@@ -113,16 +113,16 @@ checkSoapError($soap, 'getFavoriteProducts');
                 <?php if (isset($_SESSION['user_id'])) { ?>
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="preferences.php">Preferências</a></li>
-                        <li class="nav-item"><a class="nav-link" href="insert_product.php">Vender Produto</a></li>
+                        <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
+                        <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">
-                            <span>Bem-vindo, <?php echo $_SESSION['nome_completo']; ?></span>
+                            <span>Welcome, <?php echo $_SESSION['nome_completo']; ?></span>
                         </div>
                         <a class="btn btn-outline-dark" href="preferences.php">
                             <i class="bi bi-gear"></i>
-                            Preferências
+                            Preferences
                         </a>
                     </div>
                 <?php } else { ?>
@@ -149,7 +149,7 @@ checkSoapError($soap, 'getFavoriteProducts');
     <!-- Section-->
     <br><br>
     <form class="d-flex mb-4" style="justify-content: center;">
-        <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar" id="search-bar" />
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search-bar" />
         <!-- searchsame as above but with 30% width and centered -->
         <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false" aria-controls="filter-collapse">
             <i class="bi bi-funnel"></i>
@@ -219,12 +219,12 @@ checkSoapError($soap, 'getFavoriteProducts');
                                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                         <div class="text-center">
                                             <?php if (isset($_SESSION['user_id'])) { ?>
-                                                <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Comprar</a>
+                                                <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Buy</a>
                                                 <?php if ($_SESSION['user_id'] != $product['seller_id']) { ?>
                                                     <a class="btn btn-outline-dark mt-auto chat-button" href="chat.php?product_id=<?php echo $product['product_id']; ?>&seller_id=<?php echo $product['seller_id']; ?>">Chat</a>
                                                 <?php } ?>
                                             <?php } else { ?>
-                                                <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Comprar</a>
+                                                <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Buy</a>
                                             <?php } ?>
                                         </div>
                                     </div>
@@ -233,7 +233,7 @@ checkSoapError($soap, 'getFavoriteProducts');
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                 <div class="text-center">
                                     <button type="button" class="btn btn-outline-dark mt-auto" data-toggle="modal" data-target="#productModal-<?php echo $product['product_id']; ?>">
-                                        Ver detalhes
+                                        View Details
                                     </button>
                                 </div>
                             </div>

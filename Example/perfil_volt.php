@@ -236,7 +236,7 @@
                         <div class="col-lg-6 col-12 mt-5 ms-auto">
                             <div class="row">
                                 <div class="contact-info">
-                                	<h6 class="mb-3"><a href="preferencias.php">Atualize aqui as suas preferências</a></h6>
+                                	<h6 class="mb-3"><a href="preferencias.php">Atualize aqui as suas Preferences</a></h6>
                                 </div>
                                 <!-- <button href="preferencias.php"class="btn custom-btn form-control mt-4 mb-3">
                                     Preferencias de Doação

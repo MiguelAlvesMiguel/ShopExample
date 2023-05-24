@@ -28,7 +28,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <li class="nav-item"><a class="nav-link active" onclick="window.location.href='index.php'" aria-current="page">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="preferences.php">Preferências</a></li>
+                <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
                 <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li> 
             </ul>
                 <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='SignIn.php';}login()">
@@ -145,7 +145,7 @@
           </div>
           
           <div id="login">   
-            <h1>Bem Vindo!</h1>
+            <h1>Welcome, !</h1>
             <br>    
             <form action="login.php" method="post">
             

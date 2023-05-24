@@ -268,7 +268,7 @@
                                 </div>
 
                                 <div class="col-6 contact-info">
-                                	<h6 class="mb-3"><a href="preferencias.php">Atualize aqui as suas preferências</a></h6>
+                                	<h6 class="mb-3"><a href="preferencias.php">Atualize aqui as suas Preferences</a></h6>
                                 </div>
                                 <div class="col-6 border-end contact-info">
                                     <h6 class="mb-3">Disponibilidades:</h6>

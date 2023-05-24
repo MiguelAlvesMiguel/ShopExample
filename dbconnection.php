@@ -8,7 +8,7 @@
   $dbname = "asw14";
   
   #phpinfo();  
-  $soap = new nusoap_client('http://127.0.0.1/index.php?wsdl&debug=1', 'wsdl');
+  $soap = new nusoap_client('http://appserver-01.alunos.di.fc.ul.pt/~asw14/projeto/php/Server/index.php?wsdl', 'wsdl');
   $conn = new mysqli($servername, $username, $password, $dbname);
   if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

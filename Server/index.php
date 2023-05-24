@@ -12,7 +12,7 @@ require_once 'serverBDConnection.php';
 
 
 $server = new nusoap_server();
-$server->configureWSDL("testService");
+$server->configureWSDL('cumpwsdl', 'urn:cumpwsdl'); //This means 
 
 
 $server->register('getUserPreferences',

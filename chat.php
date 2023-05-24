@@ -20,6 +20,39 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 // If a chat_id is present in the URL, get the chat and its messages
+if (isset($_GET['product_id']) && isset($_GET['seller_id'])) {
+    // Get the product_id and seller_id from the URL
+    $product_id = $_GET['product_id'];
+    $seller_id = $_GET['seller_id'];
+
+    // Check if a chat already exists between the logged-in user (buyer) and the seller for this product
+    $query = "SELECT * FROM Chats WHERE buyer_id = ? AND seller_id = ? AND product_id = ?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, 'iii', $_SESSION['user_id'], $seller_id, $product_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $chat = mysqli_fetch_assoc($result);
+
+    // If a chat does not already exist, create one
+    if (!$chat) {
+        $query = "INSERT INTO Chats (buyer_id, seller_id, product_id) VALUES (?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, 'iii', $_SESSION['user_id'], $seller_id, $product_id);
+        mysqli_stmt_execute($stmt);
+
+        // Get the ID of the newly created chat
+        $chat_id = mysqli_insert_id($conn);
+    }
+    else {
+        // If a chat does exist, get its ID
+        $chat_id = $chat['chat_id'];
+    }
+
+    // Redirect to the new or existing chat
+    header("Location: chat.php?chat_id=$chat_id");
+    exit;
+}
+
 if (isset($_GET['chat_id'])) {
     $chat_id = $_GET['chat_id'];
 

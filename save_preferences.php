@@ -78,6 +78,14 @@ $stmt_delete_brands->execute();
 $stmt_delete_sizes->execute();
 $stmt_delete_categories->execute();
 
+if (empty($_POST['types']) && empty($_POST['brands']) && empty($_POST['sizes']) && empty($_POST['categories'])) {
+    // All preferences are empty, delete the record from the Preferences table
+    $sql_delete_pref = "DELETE FROM Preferences WHERE user_id = ?";
+    $stmt_delete_pref = $conn->prepare($sql_delete_pref);
+    $stmt_delete_pref->bind_param("i", $user_id);
+    $stmt_delete_pref->execute();
+}
+else{
 // Insert new preferences
 if (!empty($_POST['categories'])) {
     foreach ($_POST['categories'] as $category_name) {
@@ -121,7 +129,7 @@ if (!empty($_POST['brands'])) {
         $stmt_insert->bind_param("is", $preference_id, $brand);
         $stmt_insert->execute();
     }
-}
+}}
 header("Location: index.php");
 }
 

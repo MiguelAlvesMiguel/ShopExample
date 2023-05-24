@@ -139,10 +139,11 @@ $nameErr = $emailErr = $passwordErr = $cityErr = $postalErr = $phoneErr = $nifEr
              
                 <select id="tipo" name="tipo" required>
                   <?php
-                      $types = [ 'Calças', 'Casacos' , 'Camisolas' , 'Camisas' , 'T-Shirts' , 'Calçado' , 'Acessórios' , 'Vestidos' , 'Saias' , 'Calções' , 'Fatos de Banho' , 'Roupa Interior' , 'Outros' ];
-                      foreach ($types as $type) {
-                          echo "<option value='$type'>$type</option>";
-                      }
+                      $types = [ 'Calças', 'Casacos' , 'Camisolas' , 'Camisas' , 'T-Shirts' , 'Calcado' , 'Acessorios' , 'Vestidos' , 'Saias' , 'Calcoes' , 'Fatos de Banho' , 'Roupa Interior' , 'Outros' ];
+                       foreach ($types as $key => $type) {
+            $id = $key + 1;  // Since array index starts from 0, we add 1 to match your database ids.
+            echo "<option value='$id'>$type</option>";
+        }
 
                     ?>
                 </select>

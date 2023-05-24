@@ -44,6 +44,7 @@ function createTables($conn)
         FOREIGN KEY (user_id) REFERENCES Users(user_id)
     )",
         "CREATE TABLE IF NOT EXISTS Products (
+            available BOOLEAN NOT NULL DEFAULT TRUE,
             product_id INT AUTO_INCREMENT PRIMARY KEY,
             image_url VARCHAR(255) NOT NULL,
             seller_id INT NOT NULL,

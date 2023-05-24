@@ -1,39 +1,37 @@
 <?php
 include 'dbConnection.php';
-function checkSoapError($soap) {
-    // Check for a fault
-    if ($soap->fault) {
-        echo '<h2>Fault</h2><pre>';
-        print_r($soap->fault);
-        echo '</pre>';
-    } else {
-        // Check for errors
-        $error = $soap->getError();
-        if ($error) {
-            // Display the error
-            echo '<h2>Error</h2><pre>' . $error . '</pre>';
-        }
-    }
-}
+
 
 session_start();
+// Fetch all categories and types
+$categories = [];
+$types = [];
 
+$result = $conn->query("SELECT * FROM Category");
+while ($row = $result->fetch_assoc()) {
+    $categories[$row['id']] = $row['name'];
+}
+
+$result = $conn->query("SELECT * FROM Types");
+while ($row = $result->fetch_assoc()) {
+    $types[$row['id']] = $row['name'];
+}
 // Set default user ID if user is not logged in
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : -1;
 // Get user preferences if user is logged in
 if ($user_id != -1) {
     $result_preferences = $soap->call('getUserPreferences', array('user_id' => $user_id));
-    checkSoapError($soap);
+    checkSoapError($soap, 'getUserPreferences');
 }
 
 
 // Get all products
 $products = $soap->call('getAllProducts', array('user_id' => $user_id));
-checkSoapError($soap);
+checkSoapError($soap, 'getAllProducts');
 
 // Get favorite products if user is logged in
 $favorite_products = $soap->call('getFavoriteProducts', array('user_id' => $user_id));
-checkSoapError($soap);
+checkSoapError($soap, 'getFavoriteProducts');
 ?>
 
 <!DOCTYPE html>
@@ -204,13 +202,15 @@ $('.tab a').on('click', function (e) {
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             <?php foreach ($products as $product): ?>
                 <div class="col mb-5 product-item" id="product-<?php echo $product['product_id']; ?>" data-title="<?php echo htmlspecialchars($product['title']); ?>">
+            <div class="card h-100">
+            <div class="col mb-5 product-item" id="product-<?php echo $product['product_id']; ?>" data-title="<?php echo htmlspecialchars($product['title']); ?>">
                     <div class="card h-100">
                         <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="..." />
                         <div class="card-body p-4">
                             <div class="text-center">
                                 <!-- if the user is logged in show the star icon to favorite the product -->
                                 <?php if (isset($_SESSION['user_id'])) { ?>
-                                    <div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" data-product-id="<?php echo $product['product_id']; ?>"></div>
+                                    <div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" style="cursor: pointer;"data-product-id="<?php echo $product['product_id']; ?>"></div>
                                 <?php } ?>
                                 <h5 class="fw-bolder"><?php echo htmlspecialchars($product['title']); ?></h5>
                                 <?php echo htmlspecialchars($product['price']); ?>€
@@ -219,15 +219,55 @@ $('.tab a').on('click', function (e) {
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                             <div class="text-center">
                                 <?php if (isset($_SESSION['user_id'])) { ?>
-                                    <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Carrinho</a>
+                                    <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Comprar</a>
                                 <?php } else { ?>
-                                    <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Carrinho</a>
+                                    <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Comprar</a>
                                 <?php } ?>
                             </div>
                         </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
+                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center">
+                        <button type="button" class="btn btn-outline-dark mt-auto" data-toggle="modal" data-target="#productModal-<?php echo $product['product_id']; ?>">
+                            Ver detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+                
+        <!-- Product Modal -->
+        <div class="modal fade" id="productModal-<?php echo $product['product_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="productModalLabel-<?php echo $product['product_id']; ?>" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel-<?php echo $product['product_id']; ?>"><?php echo htmlspecialchars($product['title']); ?></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Product details go here -->
+                          <!-- Product details go here -->
+                <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="..." />
+                <p class="mt-3"><?php echo htmlspecialchars($product['description']); ?></p>
+                <p>Category: <?php echo htmlspecialchars($categories[$product['category_id']]); ?></p>
+<p>Type: <?php echo htmlspecialchars($types[$product['type_id']]); ?></p>
+
+                <p>Size: <?php echo htmlspecialchars($product['size']); ?></p>
+                <p>Brand: <?php echo htmlspecialchars($product['brand']); ?></p>
+                <p>Condition: <?php echo htmlspecialchars($product['condition']); ?></p>
+                <p>Price: <?php echo htmlspecialchars($product['price']); ?>€</p>
+          
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -242,44 +282,47 @@ $('.tab a').on('click', function (e) {
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
     
+      
+
+                                    
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
+$(document).ready(function(){
+    $(".carrinho-button").click(function(){
+        var product_id = $(this).data('product-id');
+        var seller_id = $(this).data('seller-id');
+        $.ajax({
+            url: 'purchaseProduct.php',
+            type: 'post',
+            data: {product_id: product_id, seller_id: seller_id},
+            success: function(response) {
+                var responseStr = String(response).trim();
+                if (responseStr == "Aceite") {
+            // Remove the product from the page
+            alert("Aceite");
 
+            $("#product-" + product_id).remove();
+        } else {
+            // Show an error message
+            alert("Não Aceite");
+            alert(responseStr);
+        }
+        }});
+    
+    }); 
+});
+</script>
 
-
-
-
-
-
-
-
-<div class="modal fade" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="purchaseModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="purchaseModalLabel">Purchase Status</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="purchaseModalBody">
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     const favoriteIcons = document.querySelectorAll('.favorite-icon');
 
     favoriteIcons.forEach(icon => {
         icon.addEventListener('click', function() {
+            event.stopPropagation(); 
+
             const productId = this.dataset.productId;
             const isFavorite = this.classList.contains('bi-star-fill');
-
             // Toggle the favorite state visually
             this.classList.toggle('bi-star');
             this.classList.toggle('bi-star-fill');
@@ -313,37 +356,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
-<script>
-$(document).ready(function(){
-    $(".carrinho-button").click(function(){
-        var product_id = $(this).data('product-id');
-        var seller_id = $(this).data('seller-id');
-        $.ajax({
-    url: 'purchaseProduct.php',
-    type: 'post',
-    data: {product_id: product_id, seller_id: seller_id},
-    success: function(response) {
-        // Convert the response to a string
-        var responseStr = String(response).trim();
-        
-        if (responseStr == "Aceite") {
-            // Remove the product from the page
-            $("#product-" + product_id).remove();
-            // Set the modal message
-            modalBody.text("Order Successful!");
-        } else {
-            // Set the modal message
-            modalBody.text("Order Failed: " + responseStr);
+<script defer>
+    //It's not ordered so we need to iterate through the array to find the highest ID
+    let latestProductId = <?php 
+        $highestId = 0;
+        foreach ($products as $product) {
+            if ($product['product_id'] > $highestId) {
+                $highestId = $product['product_id'];
+            }
         }
-        // Show the modal
-        $("#purchaseModal").modal('show');
+        echo $highestId;
     
-    }
-});
+    
+    ?>; // Initialize with the ID of the latest product currently displayed
+    alert("Latest product ID: " + latestProductId);
 
-
+setInterval(function() {
+    // Call the SOAP method to get the latest product ID
+    $.ajax({
+        url: 'getLatestProductId.php',
+        type: 'GET',
+        success: function(response) {
+            const receivedProductId = parseInt(response);
+            if (receivedProductId > latestProductId) {
+                // A new product has been added
+                latestProductId = receivedProductId;
+                alert("New product ID: " + latestProductId);
+                // Call another SOAP method to get the details of the new product
+                $.ajax({
+                    url: 'getProductById.php',
+                    type: 'POST',
+                    data: { product_id: latestProductId },
+                    success: function(product) {            
+                        response = JSON.parse(product);
+            
+                        // Display the product details in a notification
+                        alert(`New product added: title: ${response['title']}, description: ${response['description']}, category: ${response['category_id']}, type: ${response['type_id']}, size: ${response['size']}, brand: ${response['brand']}, condition: ${response['condition']}, price: ${response['price']}`);
+                    }
+                });
+            }
+            else{
+                alert("No new products");
+            }
+        }
     });
-});
+}, 5000); // Check every 5 seconds
+
 </script>
 
     </body>

@@ -25,21 +25,6 @@ checkSoapError($soap);
 $favorite_products = $soap->call('getFavoriteProducts', array('user_id' => $user_id));
 checkSoapError($soap);
 
-function checkSoapError($soap) {
-    // Check for a fault
-    if ($soap->fault) {
-        echo '<h2>Fault</h2><pre>';
-        print_r($soap->fault);
-        echo '</pre>';
-    } else {
-        // Check for errors
-        $error = $soap->getError();
-        if ($error) {
-            // Display the error
-            echo '<h2>Error</h2><pre>' . $error . '</pre>';
-        }
-    }
-}
 
 
 // Print everything

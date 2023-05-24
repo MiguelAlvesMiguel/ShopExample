@@ -22,21 +22,9 @@ if ($product_id === null || $seller_id === null) {
 $result = $soap->call('CompraProduto', array('IDVendedor' => $seller_id, 'IDComprador' => $user_id, 'IDProduto' => $product_id));
 checkSoapError($soap);
 // Output the result
+//print output to alert
+
 echo $result;
 
-function checkSoapError($soap) {
-    // Check for a fault
-    if ($soap->fault) {
-        echo '<h2>Fault</h2><pre>';
-        print_r($soap->fault);
-        echo '</pre>';
-    } else {
-        // Check for errors
-        $error = $soap->getError();
-        if ($error) {
-            // Display the error
-            echo '<h2>Error</h2><pre>' . $error . '</pre>';
-        }
-    }
-}
+
 ?>

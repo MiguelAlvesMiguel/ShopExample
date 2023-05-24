@@ -14,6 +14,25 @@
     die("Connection failed: " . $conn->connect_error);
   }
   
+  function checkSoapError($soap,$additional_message = null) {
+    // Check for a fault
+    if ($soap->fault) {
+        echo '<h2>Fault</h2><pre>';
+        print_r($soap->fault);
+        echo '</pre>';
+    } else {
+        // Check for errors
+        $error = $soap->getError();
+        if ($error) {
+            // Display the error
+            echo '<h2>Error</h2><pre>' . $error . '</pre>';
+            if ($additional_message != null) {
+                echo '<h2>Additional message</h2><pre>' . $additional_message . '</pre>';
+            }
+        }
+      
+    }
+}
 ?>
 
 

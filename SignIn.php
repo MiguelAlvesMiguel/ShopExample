@@ -22,34 +22,46 @@
     <?php $nameErr = $emailErr = $passwordErr = $addressErr = $cityErr = $postalErr = $phoneErr = $nifErr = $dateErr = "";?>
    <!-- Navigation-->
    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="index.php">2HandCloth</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" onclick="window.location.href='index.php'" aria-current="page">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
-                <li class="nav-item"><a class="nav-link" href="profile.html">Perfil</a></li> 
-            </ul>
-                <button class="btn btn-outline-dark"  onclick="function login(){window.location.href='SignIn.php';}login()">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    Login / Inscreva-se
-                    <!--<span class="badge bg-dark text-white ms-1 rounded-pill">0</span>-->
-                </button>
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="index.php">2HandCloth</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <?php if (isset($_SESSION['user_id'])) { ?>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <span>Welcome, <?php echo $_SESSION['nome_completo']; ?></span>
+                        </div>
+                        <a class="btn btn-outline-dark" href="preferences.php">
+                            <i class="bi bi-gear"></i>
+                            Preferences
+                        </a>
+                    </div>
+                <?php } else { ?>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
+                    </ul>
+                    <a class="btn btn-outline-dark" href="SignIn.php">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Login / Sign-Up
+                    </a>
+                <?php } ?>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
     <div class="form">
       <!--A informação de perfil deve incluir o nome, data de nascimento, género 
 (F/M/Outro), morada, localidade e código postal, telefone, e-mail e password-->
         <ul class="tab-group">
-          <li class="tab active"><a href="#signup">Inscreva-se</a></li>
+          <li class="tab active"><a href="#signup">Sign-Up</a></li>
           <li class="tab"><a href="#login">Login</a></li>
         </ul>
         
         <div class="tab-content">
           <div id="signup">   
-            <h1>Inscreva-se gratuitamente</h1>
+            <h1>Sign-Up gratuitamente</h1>
             <br> <br>
             <form action="register.php" method="post">
             

@@ -117,12 +117,16 @@ while ($row_categories = $result_categories->fetch_assoc()) {
                         <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
                         <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
+                        <li class="nav-item"><a class="nav-link" href="chat.php">Chats</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">
                             <span>Welcome, <?php echo $_SESSION['nome_completo']; ?></span>
                         </div>
-
+                        <a class="btn btn-outline-dark" href="preferences.php">
+                            <i class="bi bi-gear"></i>
+                            Preferences
+                        </a>
                     </div>
                 <?php } else { ?>
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
@@ -130,7 +134,7 @@ while ($row_categories = $result_categories->fetch_assoc()) {
                     </ul>
                     <a class="btn btn-outline-dark" href="SignIn.php">
                         <i class="bi bi-box-arrow-in-right"></i>
-                        Login / Inscreva-se
+                        Login / Sign-Up
                     </a>
                 <?php } ?>
             </div>

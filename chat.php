@@ -85,9 +85,44 @@ if (isset($_GET['chat_id'])) {
     <!-- Add your CSS here -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+    <link href="css/styles.css" rel="stylesheet" />
 </head>
 <body>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="index.php">2HandCloth</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <?php if (isset($_SESSION['user_id'])) { ?>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
+                        <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
+                        <li class="nav-item"><a class="nav-link" href="chat.php">Chats</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <span>Welcome, <?php echo $_SESSION['nome_completo']; ?></span>
+                        </div>
+                        <a class="btn btn-outline-dark" href="preferences.php">
+                            <i class="bi bi-gear"></i>
+                            Preferences
+                        </a>
+                    </div>
+                <?php } else { ?>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
+                    </ul>
+                    <a class="btn btn-outline-dark" href="SignIn.php">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Login / Sign-Up
+                    </a>
+                <?php } ?>
+            </div>
+        </div>
+    </nav>
+
     <div class="container mt-5">
         <?php if (empty($chats)): ?>
             <div class="alert alert-info" role="alert">

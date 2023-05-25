@@ -116,6 +116,7 @@ checkSoapError($soap, 'getFavoriteProducts');
                         <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
                         <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
                         <li class="nav-item"><a class="nav-link" href="chat.php">Chats</a></li>
+                        <li class="nav-item"><a class="nav-link" href="MyListings.php">My Listings</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">

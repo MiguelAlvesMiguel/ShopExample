@@ -96,10 +96,11 @@ if (isset($_GET['chat_id'])) {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <?php if (isset($_SESSION['user_id'])) { ?>
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.php" aria-current="page">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
                         <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
-                        <li class="nav-item"><a class="nav-link" href="chat.php">Chats</a></li>
+                        <li class="nav-item"><a class="nav-link  active" href="chat.php">Chats</a></li>
+                        <li class="nav-item"><a class="nav-link" href="MyListings.php">My Listings</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">

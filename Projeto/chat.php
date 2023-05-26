@@ -101,6 +101,7 @@ if (isset($_GET['chat_id'])) {
                         <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
                         <li class="nav-item"><a class="nav-link  active" href="chat.php">Chats</a></li>
                         <li class="nav-item"><a class="nav-link" href="MyListings.php">My Listings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="favorites.php">My Favorites</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">

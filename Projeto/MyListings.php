@@ -115,6 +115,7 @@ while ($row = $result->fetch_assoc()) {
                         <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
                         <li class="nav-item"><a class="nav-link" href="chat.php">Chats</a></li>
                         <li class="nav-item"><a class="nav-link active" href="MyListings.php">My Listings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="favorites.php">My Favorites</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">
@@ -151,50 +152,9 @@ while ($row = $result->fetch_assoc()) {
     <form class="d-flex mb-4" style="justify-content: center;">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search-bar" />
         <!-- searchsame as above but with 30% width and centered -->
-        <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false" aria-controls="filter-collapse">
-            <i class="bi bi-funnel"></i>
-            Filtros
-        </button>
+   
     </form>
 
-    <div class="collapse" id="filter-collapse">
-        <div class="card card-body">
-            <form>
-                <div class="row">
-                    <div class="col-4">
-                        <label for="type-select" class="form-label">Tipo</label>
-                        <select class="form-select" id="type-select">
-                            <option value="">Todos</option>
-                            <?php foreach ($types as $type) : ?>
-                                <option value="<?php echo $type['type_id']; ?>"><?php echo htmlspecialchars($type['type']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-4">
-                        <label for="category-select" class="form-label">Categoria</label>
-                        <select class="form-select" id="category-select">
-                            <option value="">Todas</option>
-                            <?php foreach ($categories as $category) : ?>
-                                <option value="<?php echo $category['category_id']; ?>"><?php echo htmlspecialchars($category['category']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-4">
-                        <label for="size-select" class="form-label">Tamanho</label>
-                        <select class="form-select" id="size-select">
-                            <option value="">Todos</option>
-                            <?php foreach ($sizes as $size) : ?>
-                                <option value="<?php echo $size['size']; ?>"><?php echo htmlspecialchars($size['size']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-end mt-3">
-                    <button type="submit" class="btn btn-primary">Aplicar filtros</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
@@ -217,14 +177,11 @@ while ($row = $result->fetch_assoc()) {
                                     </div>
                                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                         <div class="text-center">
-                                            <?php if (isset($_SESSION['user_id'])) { ?>
-                                                <a class="btn btn-outline-dark mt-auto carrinho-button" data-product-id="<?php echo $product['product_id']; ?>" data-seller-id="<?php echo $product['seller_id']; ?>">Buy</a>
+
                                                 <?php if ($_SESSION['user_id'] != $product['seller_id']) { ?>
                                                     <a class="btn btn-outline-dark mt-auto chat-button" href="chat.php?product_id=<?php echo $product['product_id']; ?>&seller_id=<?php echo $product['seller_id']; ?>">Chat</a>
                                                 <?php } ?>
-                                            <?php } else { ?>
-                                                <a class="btn btn-outline-dark mt-auto" href="SignIn.php">Buy</a>
-                                            <?php } ?>
+                                         
                                         </div>
                                     </div>
                                 </div>
@@ -358,96 +315,9 @@ while ($row = $result->fetch_assoc()) {
         });
     </script>
 
-    <script defer>
-        //It's not ordered so we need to iterate through the array to find the highest ID
-        let latestProductId = <?php
-                                $highestId = 0;
-                                foreach ($products as $product) {
-                                    if ($product['product_id'] > $highestId) {
-                                        $highestId = $product['product_id'];
-                                    }
-                                }
-                                echo $highestId;
 
+ 
 
-                                ?>; // Initialize with the ID of the latest product currently displayed
-        //alert("Latest product ID: " + latestProductId);
-
-        setInterval(function() {
-            // Call the SOAP method to get the latest product ID
-            $.ajax({
-                url: 'getLatestProductId.php',
-                type: 'GET',
-                success: function(response) {
-                    const receivedProductId = parseInt(response);
-                    if (receivedProductId > latestProductId) {
-                        // A new product has been added
-                        latestProductId = receivedProductId;
-                        // Call another SOAP method to get the details of the new product
-                        $.ajax({
-                            url: 'getProductById.php',
-                            type: 'POST',
-                            data: {
-                                product_id: latestProductId
-                            },
-                            success: function(product) {
-                                response = JSON.parse(product);
-
-                                // Display the product details in a notification
-                                if (!("Notification" in window)) {
-                                    alert("This browser does not support desktop notification");
-                                } else if (Notification.permission === "granted") {
-                                    var options = {
-                                        body: `Novo produto adicionado!: title: ${response['title']}, description: ${response['description']}, category: ${response['category_id']}, type: ${response['type_id']}, size: ${response['size']}, brand: ${response['brand']}, condition: ${response['condition']}, price: ${response['price']}`,
-                                        icon: 'icon.jpg', // path to the icon of the notification
-                                    };
-                                    var notification = new Notification("New Product", options);
-                                } else if (Notification.permission !== 'denied') {
-                                    Notification.requestPermission(function(permission) {
-                                        if (permission === "granted") {
-                                            var options = {
-                                                body: `Novo produto adicionado!: ${response['title']}, condition: ${response['condition']}, price: ${response['price']}`,
-                                                icon: 'icon.jpg', // path to the icon of the notification
-                                            };
-                                            var notification = new Notification("New Product", options);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        }, 5000); // Check every 5 seconds
-    </script>
-    <script>
-        $(document).ready(function() {
-            setInterval(function() {
-                $.ajax({
-                    url: 'fetchProducts.php',
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(products) {
-                        // Clear the current products
-                        $('.product-item').remove();
-
-                        // Add the new products
-                        $.each(products, function(i, product) {
-                            // Create the new product item
-                            var productItem = $('<div>').addClass('col mb-5 product-item').attr('id', 'product-' + product.product_id).attr('data-title', product.title);
-                            // Add the product details to productItem
-                            // ...
-                            // Append the product item to the container
-                            $('.row-cols-2').append(productItem);
-                        });
-                    }
-                });
-            }, 5000); // Fetch every 5 seconds
-        });
-    </script>
-
-
-    </script>
 
 </body>
 

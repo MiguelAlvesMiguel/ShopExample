@@ -137,6 +137,10 @@ function CompraProduto($IDVendedor, $IDComprador, $IDProduto) {
     // Connect to the database
     global $conn;
 
+    if($IDVendedor == $IDComprador) { //(comprador e vendedor são o mesmo)
+        return "Não aceite";
+    }
+
     // Check product availability
     $sql_check = "SELECT price, available FROM Products WHERE product_id = ?";
     $stmt_check = mysqli_prepare($conn, $sql_check);
@@ -146,11 +150,11 @@ function CompraProduto($IDVendedor, $IDComprador, $IDProduto) {
     $row_check = mysqli_fetch_assoc($result_check);
 
     if (!$row_check) { //: Produto não encontrado.
-        return "Não aceite (produto não encontrado)";
+        return "Não aceite";
     }
 
     if ($row_check['available'] == 0) { //: Produto não está disponível.
-        return "Não aceite (produto não disponível)";
+        return "Não aceite";
     }
 
     $price = $row_check['price'];

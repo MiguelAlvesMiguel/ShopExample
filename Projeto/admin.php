@@ -1,6 +1,23 @@
 <?php
     require 'dbConnection.php';
+    function getTransactions($conn) {
+        $sql = "SELECT Transactions.transaction_id, Transactions.purchase_date, Transactions.price, Buyers.name AS buyer_name, Sellers.name AS seller_name, Products.title AS product_name 
+                FROM Transactions 
+                INNER JOIN Users AS Buyers ON Transactions.buyer_id = Buyers.user_id 
+                INNER JOIN Users AS Sellers ON Transactions.seller_id = Sellers.user_id 
+                INNER JOIN Products ON Transactions.product_id = Products.product_id";
+        $result = mysqli_query($conn, $sql);
 
+        $transactions = [];
+
+        if (mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_assoc($result)) {
+                $transactions[] = $row;
+            }
+        }
+
+        return $transactions;
+    }
     function getUsers($conn) {
         $sql = "SELECT * FROM Users";
         $result = mysqli_query($conn, $sql);
@@ -41,6 +58,7 @@
                         <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
                         <li class="nav-item"><a class="nav-link" href="chat.php">Chats</a></li>
                         <li class="nav-item"><a class="nav-link" href="MyListings.php">My Listings</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="favorites.php">My Favorites</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">
@@ -73,23 +91,7 @@
                     <label for="search">Search:</label>
                     <input type="text" class="form-control" id="search" placeholder="Search...">
                 </div>
-                <div class="form-group">
-                    <label for="gender">Gender:</label>
-                    <select class="form-control" id="gender">
-                        <option value="">All</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="age">Age Range:</label>
-                    <select class="form-control" id="age">
-                        <option value="">All</option>
-                        <option value="18-25">18-25</option>
-                        <option value="26-35">26-35</option>
-                        <option value="36-45">36-45</option>
-                    </select>
-                </div>
+              
             </form>
         </div>
     </div>
@@ -141,6 +143,37 @@
         </tbody>
     </table>
 </div>
+
+<h1>Transaction Information</h1>
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Transaction ID</th>
+            <th>Buyer</th>
+            <th>Seller</th>
+            <th>Product</th>
+            <th>Purchase Date</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php
+        $transactions = getTransactions($conn);
+        foreach ($transactions as $transaction) {
+    ?>
+        <tr>
+            <td><?php echo $transaction['transaction_id']; ?></td>
+            <td><?php echo $transaction['buyer_name']; ?></td>
+            <td><?php echo $transaction['seller_name']; ?></td>
+            <td><?php echo $transaction['product_name']; ?></td>
+            <td><?php echo $transaction['purchase_date']; ?></td>
+            <td><?php echo $transaction['price']; ?></td>
+        </tr>
+    <?php } ?>
+    </tbody>
+</table>
+
+
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

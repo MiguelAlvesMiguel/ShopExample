@@ -1,37 +1,51 @@
 <?php
 include 'dbConnection.php';
-
-
 session_start();
-// Fetch all categories and types
-$categories = [];
-$types = [];
 
-$result = $conn->query("SELECT * FROM Category");
-while ($row = $result->fetch_assoc()) {
-    $categories[$row['id']] = $row['name'];
+if(!isset($_SESSION['user_id'])) {
+    echo "You need to be logged in to view your favorite products.";
+    exit;
 }
 
-$result = $conn->query("SELECT * FROM Types");
-while ($row = $result->fetch_assoc()) {
-    $types[$row['id']] = $row['name'];
-}
-// Set default user ID if user is not logged in
-$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : -1;
-// Get user preferences if user is logged in
-if ($user_id != -1) {
-    $result_preferences = $soap->call('getUserPreferences', array('user_id' => $user_id));
-    checkSoapError($soap, 'getUserPreferences');
+$user_id = $_SESSION['user_id'];
+
+$favorites = [];
+
+$sql = "SELECT product_id FROM Favorites WHERE user_id = ?";
+if($stmt = $conn->prepare($sql)){
+    $stmt->bind_param("i", $user_id);
+    if($stmt->execute()){
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $favorites[] = $row['product_id'];
+        }
+    } else{
+        echo "Oops! Something went wrong. Please try again later.";
+    }
+    $stmt->close();
 }
 
-// Get all products
-$products = $soap->call('getAllProducts', array('user_id' => $user_id));
-checkSoapError($soap, 'getAllProducts');
+$favorite_products = [];
 
-// Get favorite products if user is logged in
-$favorite_products = $soap->call('getFavoriteProducts', array('user_id' => $user_id));
-checkSoapError($soap, 'getFavoriteProducts');
+foreach($favorites as $product_id){
+    $sql = "SELECT * FROM Products WHERE product_id = ?";
+    if($stmt = $conn->prepare($sql)){
+        $stmt->bind_param("i", $product_id);
+        if($stmt->execute()){
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $favorite_products[] = $row;
+            }
+        } else{
+            echo "Oops! Something went wrong. Please try again later.";
+        }
+        $stmt->close();
+    }
+}
+
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -112,12 +126,12 @@ checkSoapError($soap, 'getFavoriteProducts');
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <?php if (isset($_SESSION['user_id'])) { ?>
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" href="index.php" aria-current="page">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.php" aria-current="page">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="preferences.php">Preferences</a></li>
                         <li class="nav-item"><a class="nav-link" href="insert_product.php">Sell Product</a></li>
                         <li class="nav-item"><a class="nav-link" href="chat.php">Chats</a></li>
                         <li class="nav-item"><a class="nav-link" href="MyListings.php">My Listings</a></li>
-                        <li class="nav-item"><a class="nav-link" href="favorites.php">My Favorites</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="favorites.php">My Favorites</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <div class="me-3">
@@ -154,13 +168,14 @@ checkSoapError($soap, 'getFavoriteProducts');
     <form class="d-flex mb-4" style="justify-content: center;">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search-bar" />
         <!-- searchsame as above but with 30% width and centered -->
-    
+   
     </form>
 
+
     <section class="py-5">
-        <div class="container px-4 px-lg-5 mt-5">
-            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                <?php foreach ($products as $product) : ?>
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            <?php foreach ($favorite_products as $product) : ?>
                     <div class="col mb-5 product-item" id="product-<?php echo $product['product_id']; ?>" data-title="<?php echo htmlspecialchars($product['title']); ?>">
                         <div class="card h-100">
                             <div class="col mb-5 product-item" id="product-<?php echo $product['product_id']; ?>" data-title="<?php echo htmlspecialchars($product['title']); ?>">
@@ -170,7 +185,7 @@ checkSoapError($soap, 'getFavoriteProducts');
                                         <div class="text-center">
                                             <!-- if the user is logged in show the star icon to favorite the product -->
                                             <?php if (isset($_SESSION['user_id'])) { ?>
-                                                <div class="bi <?php echo in_array($product['product_id'], $favorite_products) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" style="cursor: pointer;" data-product-id="<?php echo $product['product_id']; ?>"></div>
+                                                <div class="bi <?php echo in_array($product['product_id'], $favorites) ? 'bi-star-fill' : 'bi-star'; ?> favorite-icon" style="cursor: pointer;" data-product-id="<?php echo $product['product_id']; ?>"></div>
                                             <?php } ?>
                                             <h5 class="fw-bolder"><?php echo htmlspecialchars($product['title']); ?></h5>
                                             <?php echo htmlspecialchars($product['price']); ?>€
@@ -280,26 +295,36 @@ checkSoapError($soap, 'getFavoriteProducts');
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const favoriteIcons = document.querySelectorAll('.favorite-icon');
+    const favoriteIcons = document.querySelectorAll('.favorite-icon');
 
-            favoriteIcons.forEach(icon => {
-                icon.addEventListener('click', function() {
-                    event.stopPropagation();
+    favoriteIcons.forEach(icon => {
+        icon.addEventListener('click', function() {
+            event.stopPropagation();
 
-                    const productId = this.dataset.productId;
-                    const isFavorite = this.classList.contains('bi-star-fill');
-                    // Toggle the favorite state visually
-                    this.classList.toggle('bi-star');
-                    this.classList.toggle('bi-star-fill');
+            const productId = this.dataset.productId;
+            const isFavorite = this.classList.contains('bi-star-fill');
+            // Toggle the favorite state visually
+            this.classList.toggle('bi-star');
+            this.classList.toggle('bi-star-fill');
 
-                    // Send an AJAX request to update the Favorites table
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'update_favorite.php', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.send(`user_id=${encodeURIComponent(<?php echo $user_id; ?>)}&product_id=${encodeURIComponent(productId)}&is_favorite=${encodeURIComponent(!isFavorite)}`);
-                });
-            });
+            // Send an AJAX request to update the Favorites table
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'update_favorite.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success && isFavorite) {
+                        // If the product was unfavorited, remove it from the page
+                        document.getElementById(`product-${productId}`).remove();
+                    }
+                }
+            };
+            xhr.send(`user_id=${encodeURIComponent(<?php echo $user_id; ?>)}&product_id=${encodeURIComponent(productId)}&is_favorite=${encodeURIComponent(!isFavorite)}`);
         });
+    });
+});
+
 
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.querySelector('#search-bar');
@@ -319,145 +344,11 @@ checkSoapError($soap, 'getFavoriteProducts');
         });
     </script>
 
-    <script defer>
-        //It's not ordered so we need to iterate through the array to find the highest ID
-        let latestProductId = <?php
-                                $highestId = 0;
-                                foreach ($products as $product) {
-                                    if ($product['product_id'] > $highestId) {
-                                        $highestId = $product['product_id'];
-                                    }
-                                }
-                                echo $highestId;
 
 
-                                ?>; // Initialize with the ID of the latest product currently displayed
-        //alert("Latest product ID: " + latestProductId);
 
-        setInterval(function() {
-            // Call the SOAP method to get the latest product ID
-            $.ajax({
-                url: 'getLatestProductId.php',
-                type: 'GET',
-                success: function(response) {
-                    const receivedProductId = parseInt(response);
-                    if (receivedProductId > latestProductId) {
-                        // A new product has been added
-                        latestProductId = receivedProductId;
-                        // Call another SOAP method to get the details of the new product
-                        $.ajax({
-                            url: 'getProductById.php',
-                            type: 'POST',
-                            data: {
-                                product_id: latestProductId
-                            },
-                            success: function(product) {
-                                response = JSON.parse(product);
-
-                                // Display the product details in a notification
-                                if (!("Notification" in window)) {
-                                    alert("This browser does not support desktop notification");
-                                } else if (Notification.permission === "granted") {
-                                    var options = {
-                                        body: `Novo produto adicionado!: title: ${response['title']}, description: ${response['description']}, category: ${response['category_id']}, type: ${response['type_id']}, size: ${response['size']}, brand: ${response['brand']}, condition: ${response['condition']}, price: ${response['price']}`,
-                                        icon: 'icon.jpg', // path to the icon of the notification
-                                    };
-                                    var notification = new Notification("New Product", options);
-
-                                } else if (Notification.permission !== 'denied') {
-                                    Notification.requestPermission(function(permission) {
-                                        if (permission === "granted") {
-                                            var options = {
-                                                body: `Novo produto adicionado!: ${response['title']}, condition: ${response['condition']}, price: ${response['price']}`,
-                                                icon: 'icon.jpg', // path to the icon of the notification
-                                            };
-                                            var notification = new Notification("New Product", options);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        }, 5000); // Check every 5 seconds
     </script>
-    <script>
-        $(document).ready(function() {
-            setInterval(function() {
-                $.ajax({
-                    url: 'fetchProducts.php',
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(products) {
-                        // Clear the current products
-                        $('.product-item').remove();
 
-                        // Add the new products
-                        $.each(products, function(i, product) {
-                            // Create the new product item
-                           // Create the card
-var card = $('<div>').addClass('card h-100');
-
-// Add the product image
-var productImage = $('<img>').addClass('card-img-top').attr('src', response.image_url);
-card.append(productImage);
-
-// Add the product details
-var cardBody = $('<div>').addClass('card-body p-4');
-var textCenter = $('<div>').addClass('text-center');
-textCenter.append('<h5 class="fw-bolder">' + response.title + '</h5>');
-textCenter.append(response.price + '€');
-cardBody.append(textCenter);
-card.append(cardBody);
-
-// Add the footer
-var cardFooter = $('<div>').addClass('card-footer p-4 pt-0 border-top-0 bg-transparent');
-var footerTextCenter = $('<div>').addClass('text-center');
-footerTextCenter.append('<button type="button" class="btn btn-outline-dark mt-auto">View Details</button>');
-cardFooter.append(footerTextCenter);
-card.append(cardFooter);
-
-// Add the card to the product item
-productItem.append(card);
-
-// Append the product item to the container
-$('.row-cols-2').append(productItem);
-                          
-                        });
-                    }
-                });
-            }, 5000); // Fetch every 5 seconds
-        });
-    </script>
-    
-    <script>
-$(document).ready(function(){
-    $('#filter-form').on('submit', function(e){
-        e.preventDefault();
-
-        var type = $('#type-select').val();
-        var category = $('#category-select').val();
-        var size = $('#size-select').val();
-
-        $.ajax({
-            url: 'filter_products.php',
-            type: 'post',
-            data: {type:type, category:category, size:size},
-            success: function(response){
-                // replace the current products with the filtered ones
-                $('.product-item').remove();
-                $('.row-cols-2').append(response);
-            }
-        });
-    });
-});
-</script>
-
-
-
-
-    
 </body>
 
 </html>

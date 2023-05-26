@@ -13,5 +13,12 @@ if ($is_favorite === 'true') {
 
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, 'ii', $user_id, $product_id);
-mysqli_stmt_execute($stmt);
+
+if (mysqli_stmt_execute($stmt)) {
+    // If the query was successful, return success = true
+    echo json_encode(['success' => true]);
+} else {
+    // If the query failed, return success = false
+    echo json_encode(['success' => false]);
+}
 ?>
